@@ -28,7 +28,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<MessageHub>("/chatHub");
 //app.MapGet("/test", async (IHubContext<ChatHub> hub, string message) =>
 //  await hub.Clients.All.SendAsync("NotifyMe", $"Message: {message}"));
 

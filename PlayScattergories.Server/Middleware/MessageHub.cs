@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-public class ChatHub : Hub
+public class MessageHub : Hub
 {
     public async Task SendMessage(string message)
     {

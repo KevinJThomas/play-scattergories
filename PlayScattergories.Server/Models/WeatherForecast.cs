@@ -1,4 +1,4 @@
-namespace PlayScattergories.Server
+namespace PlayScattergories.Server.Models
 {
     public class WeatherForecast
     {
