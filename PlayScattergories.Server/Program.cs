@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.SignalR;
+using PlayScattergories.Server.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,5 +41,7 @@ app.UseCors(options =>
     .AllowCredentials()
     .SetIsOriginAllowed(origin => true);
 });
+
+ConfigurationHelper.Initialize(app.Configuration);
 
 app.Run();

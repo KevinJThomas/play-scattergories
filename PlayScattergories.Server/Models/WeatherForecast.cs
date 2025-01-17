@@ -1,6 +1,6 @@
 namespace PlayScattergories.Server.Models
 {
-    public class WeatherForecast
+    public class WeatherForecast  // TODO: delete this
     {
         public DateOnly Date { get; set; }
 
