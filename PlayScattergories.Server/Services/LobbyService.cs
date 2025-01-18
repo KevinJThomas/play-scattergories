@@ -44,6 +44,7 @@ namespace PlayScattergories.Server.Services
                 _lobbies[index].GameState.UnusedCategoryCards = newCategoryCardList;
                 _lobbies[index].GameState.CategoryCard = newCategoryCard;
                 _lobbies[index].GameState.Letter = GameService.GetLetter();
+                _lobbies[index].GameState.RoundNumber = 1;
                 _lobbies[index].IsWaitingToStart = false;
 
                 return _lobbies[index];

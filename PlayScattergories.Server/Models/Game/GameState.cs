@@ -7,7 +7,7 @@ namespace PlayScattergories.Server.Models.Game
         public GameState()
         {
             Letter = string.Empty;
-            RoundNumber = 1;
+            RoundNumber = 0;
             CategoryCard = new CategoryCard();
             UnusedCategoryCards = GameService.GetAllCategoryCards();
         }
