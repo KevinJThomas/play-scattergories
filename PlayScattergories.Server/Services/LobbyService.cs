@@ -1,17 +1,18 @@
 ﻿using PlayScattergories.Server.Helpers;
 using PlayScattergories.Server.Models;
 using PlayScattergories.Server.Models.Player;
+using System.Numerics;
 
 namespace PlayScattergories.Server.Services
 {
     public static class LobbyService
     {
-        private static List<Lobby> _lobbies { get; set; }
+        private static List<Lobby> _lobbies { get; set; } = new List<Lobby>();
         private static readonly int _playerMaxPerLobby = ConfigurationHelper.config.GetValue<int>("App:PlayerMaxPerLobby");
 
         #region public methods
 
-        public static bool NewPlayerJoined(Player player)
+        public static List<Player> NewPlayerJoined(Player player)
         {
             ClearInactiveLobbies();
             var availableLobby = FindAvailableLobby();
@@ -21,11 +22,11 @@ namespace PlayScattergories.Server.Services
                 if (index >= 0 && index < _lobbies.Count)
                 {
                     _lobbies[index].Players.Add(player);
-                    return true;
+                    return _lobbies[index].Players;
                 }
             }
 
-            return false;
+            return null;
         }
 
         public static Lobby? StartLobby(string id)
@@ -48,6 +49,21 @@ namespace PlayScattergories.Server.Services
                 _lobbies[index].IsWaitingToStart = false;
 
                 return _lobbies[index];
+            }
+
+            return null;
+        }
+
+        public static List<Player> PlayerLeft(string id)
+        {
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby.Players.Any(p => p.Id == id))
+                {
+                    var index = GetPlayerIndexById(id, lobby);
+                    lobby.Players.RemoveAt(index);
+                    return lobby.Players;
+                }
             }
 
             return null;
@@ -96,7 +112,23 @@ namespace PlayScattergories.Server.Services
         private static int GetLobbyIndexById(string id)
         {
             var lobby = _lobbies.Where(x => x.Id == id).FirstOrDefault();
+            if (lobby == null)
+            {
+                return -1;
+            }
+
             return _lobbies.FindIndex(x => x == lobby);
+        }
+
+        private static int GetPlayerIndexById(string id, Lobby lobby)
+        {
+            var player = lobby.Players.Where(x => x.Id == id).FirstOrDefault();
+            if (player == null)
+            {
+                return -1;
+            }
+
+            return lobby.Players.FindIndex(x => x == player);
         }
 
         #endregion

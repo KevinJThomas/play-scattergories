@@ -28,17 +28,7 @@ function App() {
 
     connection
       .start()
-      .then(() => {
-        connection.invoke("SendMessage", "gotem chief").catch((err) => {
-          setGameStatus("errorPage");
-          setError(err);
-        });
-      })
       .catch((err) => console.error("Error connecting to hub:", err));
-
-    connection.on("ReceiveMessage", (message) => {
-      console.log("Received message:", message);
-    });
   }, [connection]);
 
   return (
