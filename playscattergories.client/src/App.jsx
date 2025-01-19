@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
-import NamePage from "./NamePage";
-import ErrorPage from "./ErrorPage";
+import NamePage from "./pages/NamePage";
+import ErrorPage from "./pages/ErrorPage";
+import LobbyPage from "./pages/LobbyPage";
 
 function App() {
   const [gameStatus, setGameStatus] = useState("namePage");
@@ -41,7 +42,7 @@ function App() {
   }, [connection]);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-green-400 to-blue-500">
+    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-green-400 to-blue-500">
       {gameStatus === "namePage" && (
         <NamePage
           setGameStatus={setGameStatus}
@@ -50,6 +51,7 @@ function App() {
         />
       )}
       {gameStatus === "errorPage" && <ErrorPage error={error} />}
+      {gameStatus === "lobbyPage" && <LobbyPage />}
     </div>
   );
 }
