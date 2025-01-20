@@ -24,16 +24,9 @@ public class MessageHub : Hub
 
         if (lobby != null)
         {
-            if (!lobby.IsWaitingToStart && !lobby.FailedToStart)
+            if (!lobby.IsWaitingToStart && !lobby.FailedToStart && lobby.IsActive)
             {
-                if (lobby.IsActive)
-                {
-                    await Clients.Group(lobby.Id).SendAsync("ConfirmNextRound", lobby);
-                }
-                else
-                {
-                    await Clients.Group(lobby.Id).SendAsync("GameComplete", lobby);
-                }
+                await Clients.Group(lobby.Id).SendAsync("ConfirmNextRound", lobby);
             }
             else if (lobby.FailedToStart && !string.IsNullOrWhiteSpace(lobby.Id))
             {
