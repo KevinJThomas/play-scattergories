@@ -1,3 +1,4 @@
+import Button from "../Button";
 import Card from "../Card";
 import Header from "../Header";
 import { useState } from "react";
@@ -26,10 +27,17 @@ import useInterval from "use-interval";
 //   unusedCategoryCards: [],
 // };
 
-export default function GamePage({ gameState }) {
+export default function GamePage({ gameState, connection }) {
   const [roundTimeRemaining, setRoundTimeRemaining] = useState("3:00");
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const foo = useInterval(() => {
+  function submitWords() {
+    setHasSubmitted(true);
+    connection.invoke("WordsSubmitted", words);
+  }
+
+  useInterval(() => {
+    console.log("tick");
     const timeLeft = Math.max(
       Math.round((gameState.submitNextRoundTimeLimit - Date.now()) / 1000),
       0,
@@ -41,9 +49,11 @@ export default function GamePage({ gameState }) {
       secondsLeft < 10 ? "0" + secondsLeft : secondsLeft;
 
     setRoundTimeRemaining(minutesLeft + ":" + formattedSecondsLeft);
-  }, 1000);
 
-  console.log("foo", foo);
+    if (timeLeft === 0 && !hasSubmitted) {
+      submitWords();
+    }
+  }, 1000);
 
   const [words, setWords] = useState([
     "",
@@ -89,6 +99,7 @@ export default function GamePage({ gameState }) {
                     </td>
                     <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
                       <input
+                        disabled={hasSubmitted}
                         spellCheck={true}
                         onChange={(e) => setWord(e.target.value, index)}
                         className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -104,6 +115,12 @@ export default function GamePage({ gameState }) {
           </div>
         </div>
       </Card>
+
+      {import.meta.env.MODE === "development" && (
+        <Button fullWidth onClick={submitWords} disabled={hasSubmitted}>
+          Submit
+        </Button>
+      )}
     </div>
   );
 }

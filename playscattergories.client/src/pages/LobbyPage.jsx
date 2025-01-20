@@ -5,7 +5,7 @@ import Header from "../Header";
 
 export default function Lobby({ players, playerId, connection }) {
   function startGame() {
-    connection.invoke("GameStarted");
+    connection.invoke("NextRound");
   }
 
   return (

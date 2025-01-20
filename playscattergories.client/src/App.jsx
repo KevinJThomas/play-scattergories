@@ -4,6 +4,7 @@ import NamePage from "./pages/NamePage";
 import ErrorPage from "./pages/ErrorPage";
 import LobbyPage from "./pages/LobbyPage";
 import GamePage from "./pages/GamePage";
+import ScorePage from "./pages/ScorePage";
 
 function App() {
   const [gameStatus, setGameStatus] = useState("namePage");
@@ -48,9 +49,15 @@ function App() {
       setGameStatus("errorPage");
     });
 
-    connection.on("ConfirmGameStarted", (lobby) => {
+    connection.on("ConfirmNextRound", (lobby) => {
       setGameStatus("gamePage");
       setGameState(lobby.gameState);
+    });
+
+    connection.on("RoundComplete", (lobby) => {
+      setGameStatus("scorePage");
+      setGameState(lobby.gameState);
+      setPlayers(lobby.players);
     });
   }, [connection]);
 
@@ -71,7 +78,17 @@ function App() {
           connection={connection}
         />
       )}
-      {gameStatus === "gamePage" && <GamePage gameState={gameState} />}
+      {gameStatus === "gamePage" && (
+        <GamePage gameState={gameState} connection={connection} />
+      )}
+      {gameStatus === "scorePage" && (
+        <ScorePage
+          players={players}
+          playerId={playerId}
+          gameState={gameState}
+          connection={connection}
+        />
+      )}
     </div>
   );
 }
