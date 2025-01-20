@@ -27,7 +27,7 @@ export default function NamePage({ connection, setGameStatus, setError }) {
   }
   return (
     <div>
-      <Header>scattegories</Header>
+      <Header>Scattergories</Header>
       <Card>
         <h3 className="text-base font-semibold text-gray-900">
           Enter your name.

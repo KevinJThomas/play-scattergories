@@ -3,49 +3,35 @@ import Button from "../Button";
 import Card from "../Card";
 import Header from "../Header";
 
-const people = [
-  {
-    name: "Leslie Alexander",
-  },
-  {
-    name: "Michael Foster",
-  },
-  {
-    name: "Dries Vincent",
-  },
-  {
-    name: "Lindsay Walton",
-  },
-  {
-    name: "Courtney Henry",
-  },
-  {
-    name: "Tom Cook",
-  },
-  {
-    name: "Jimmy Dean",
-  },
-  {
-    name: "Pablo",
-  },
-];
-
-export default function Lobby() {
+export default function Lobby({ players, playerId }) {
   return (
     <div>
       <Header>Lobby</Header>
       <Card>
         <ul role="list" className="divide-y divide-gray-200">
-          {people.map((person) => (
-            <li key={person.email} className="flex gap-x-4 py-1">
+          {players.map((player, index) => (
+            <li key={player.id} className="flex gap-x-4 py-1">
               <div className="flex items-center">
-                <Avatar name={person.name} />
-                <p className="text-sm/6 text-gray-900">{person.name}</p>
+                <Avatar name={player.name} />
+                <p className="text-sm/6 text-gray-900">
+                  {player.name}
+                  {index === 0 && (
+                    <span className="text-xs text-gray-600"> (Host)</span>
+                  )}
+                </p>
               </div>
             </li>
           ))}
         </ul>
-        <Button fullWidth>Start Game</Button>
+        {playerId === players[0].playerId && (
+          <Button
+            fullWidth
+            disabled={players.length <= 1}
+            onClick={() => console.log("start game")}
+          >
+            Start Game
+          </Button>
+        )}
       </Card>
     </div>
   );
