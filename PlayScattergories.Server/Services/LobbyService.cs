@@ -65,7 +65,8 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter();
                 _lobbies[lobbyIndex].GameState.RoundNumber = 1;
                 _lobbies[lobbyIndex].IsWaitingToStart = false;
-                _lobbies[lobbyIndex].GameState.SubmitNextRoundTimeLimit = DateTimeOffset.Now.AddMinutes(3).ToUnixTimeSeconds();
+                var time = DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1).AddMinutes(3);
+                _lobbies[lobbyIndex].GameState.SubmitNextRoundTimeLimit = (long)(time.TotalMilliseconds + 0.5);
 
                 return _lobbies[lobbyIndex];
             }
@@ -171,7 +172,8 @@ namespace PlayScattergories.Server.Services
             if (index >= 0 &&
                 index < _lobbies.Count &&
                 _lobbies[index] != null &&
-                _lobbies[index].GameState != null)
+                _lobbies[index].GameState != null &&
+                _lobbies[index].Players != null)
             {
                 _lobbies[index].GameState = GameService.ScoreRound(_lobbies[index]);
                 return _lobbies[index];
