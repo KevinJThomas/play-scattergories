@@ -6,14 +6,16 @@
         {
             Id = id;
             Name = name;
-            Points = 0;
+            RoundPoints = 0;
+            TotalPoints = 0;
             ScoreSheet = new ScoreSheet();
             IsActive = true;
         }
 
         public string Id { get; set; }
         public string Name { get; set; }
-        public int Points { get; set; }
+        public int RoundPoints { get; set; }
+        public int TotalPoints { get; set; }
         public ScoreSheet? ScoreSheet { get; set; }
         public bool RoundOneSubmitted { get; set; }
         public bool RoundTwoSubmitted { get; set; }

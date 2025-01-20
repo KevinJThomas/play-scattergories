@@ -111,6 +111,7 @@ namespace PlayScattergories.Server.Services
             // Loop through players and give out points for scoring words
             foreach (var player in lobby.Players)
             {
+                player.RoundPoints = 0;
                 // Get player words for the round
                 var currentWords = GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
 
@@ -120,7 +121,8 @@ namespace PlayScattergories.Server.Services
                     // If the word isn't null, and the duplicates array doesn't contain the word, and the word starts with the correct letter
                     if (!string.IsNullOrWhiteSpace(currentWords[i]) && !duplicateWordsArray[i].Contains(currentWords[i].ToLower()) && currentWords[i].Substring(0, 1).ToLower() == lobby.GameState.Letter)
                     {
-                        player.Points += 1;
+                        player.RoundPoints += 1;
+                        player.TotalPoints += 1;
 
                         // Check for multi word answers
                         var wordSplit = currentWords[i].Split(' ');
@@ -131,7 +133,8 @@ namespace PlayScattergories.Server.Services
                             {
                                 if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter)
                                 {
-                                    player.Points += 1;
+                                    player.RoundPoints += 1;
+                                    player.TotalPoints += 1;
                                 }
                             }
                         }
