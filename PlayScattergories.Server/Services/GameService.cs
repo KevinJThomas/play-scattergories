@@ -1,4 +1,5 @@
 ﻿using PlayScattergories.Server.Models.Game;
+using PlayScattergories.Server.Models.Player;
 
 namespace PlayScattergories.Server.Services
 {
@@ -63,6 +64,24 @@ namespace PlayScattergories.Server.Services
             // Return a random lowercase letter a-z
             var character = (char)('a' + _random.Next(0, 26));
             return character.ToString();
+        }
+
+        public static ScoreSheet PopulateScoreSheet(List<string> words, ScoreSheet scoreSheet, int roundNumber)
+        {
+            switch (roundNumber)
+            {
+                case 1:
+                    scoreSheet.RoundOne = words;
+                    return scoreSheet;
+                case 2:
+                    scoreSheet.RoundTwo = words;
+                    return scoreSheet;
+                case 3:
+                    scoreSheet.RoundThree = words;
+                    return scoreSheet;
+                default:
+                    return scoreSheet;
+            }
         }
     }
 }

@@ -65,6 +65,7 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter();
                 _lobbies[lobbyIndex].GameState.RoundNumber = 1;
                 _lobbies[lobbyIndex].IsWaitingToStart = false;
+                _lobbies[lobbyIndex].GameState.SubmitNextRoundDateTime = DateTime.Now.AddMinutes(3);
 
                 return _lobbies[lobbyIndex];
             }
@@ -88,6 +89,75 @@ namespace PlayScattergories.Server.Services
             }
 
             return null;
+        }
+
+        public static Lobby WordsSubmitted(string playerId, List<string> words)
+        {
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby.Players.Any(p => p.Id == playerId))
+                {
+                    var index = GetPlayerIndexById(playerId, lobby);
+                    lobby.Players[index].ScoreSheet = GameService.PopulateScoreSheet(words, lobby.Players[index].ScoreSheet, lobby.GameState.RoundNumber);
+                    return lobby;
+                }
+            }
+
+            return null;
+        }
+
+        public static bool IsRoundComplete(Lobby lobby)
+        {
+            if (lobby != null && lobby.GameState != null)
+            {
+                switch (lobby.GameState.RoundNumber)
+                {
+                    case 1:
+                        if (lobby.Players.Any(x => !x.RoundOneSubmitted) || lobby.GameState.RoundOneSubmitted)
+                        {
+                            return false;
+                        }
+
+                        var indexOne = GetLobbyIndexById(lobby.Id);
+                        if (_lobbies[indexOne] != null && _lobbies[indexOne].GameState != null && !_lobbies[indexOne].GameState.RoundOneSubmitted)
+                        {
+                            _lobbies[indexOne].GameState.RoundOneSubmitted = true;
+                            return true;
+                        }
+
+                        return false;
+                    case 2:
+                        if (lobby.Players.Any(x => !x.RoundTwoSubmitted))
+                        {
+                            return false;
+                        }
+
+                        var indexTwo = GetLobbyIndexById(lobby.Id);
+                        if (_lobbies[indexTwo] != null && _lobbies[indexTwo].GameState != null && !_lobbies[indexTwo].GameState.RoundTwoSubmitted)
+                        {
+                            _lobbies[indexTwo].GameState.RoundTwoSubmitted = true;
+                            return true;
+                        }
+
+                        return false;
+                    case 3:
+                        if (lobby.Players.Any(x => !x.RoundThreeSubmitted))
+                        {
+                            return false;
+                        }
+
+                        var indexThree = GetLobbyIndexById(lobby.Id);
+                        if (_lobbies[indexThree] != null && _lobbies[indexThree].GameState != null && !_lobbies[indexThree].GameState.RoundThreeSubmitted)
+                        {
+                            _lobbies[indexThree].GameState.RoundThreeSubmitted = true;
+                            return true;
+                        }
+
+                        return false;
+                }
+            }
+
+            return false;
         }
 
         #endregion

@@ -41,6 +41,16 @@ public class MessageHub : Hub
         }
     }
 
+    public async Task WordsSubmitted(List<string> words)
+    {
+        var lobby = LobbyService.WordsSubmitted(Context.ConnectionId, words);
+
+        if (lobby != null && LobbyService.IsRoundComplete(lobby))
+        {
+            await Clients.Group(lobby.Id).SendAsync("RoundComplete", lobby);
+        }
+    }
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var lobby = LobbyService.PlayerLeft(Context.ConnectionId);
