@@ -16,6 +16,8 @@ export default function NamePage({ connection, setGameStatus, setError }) {
       setGameStatus("errorPage");
       setError(err);
     });
+
+    setName("");
   }
   return (
     <div>

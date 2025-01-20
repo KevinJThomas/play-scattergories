@@ -3,37 +3,47 @@ import Header from "../Header";
 import { useState } from "react";
 import useInterval from "use-interval";
 
-const gameState = {
-  letter: "c",
-  roundNumber: 1,
-  submitNextRoundDateTime: Date.now(),
-  categoryCard: {
-    categories: [
-      "A boy’s name",
-      "Countries",
-      "Flowers",
-      "Things that you shout",
-      "Excuses for being late",
-      "Pet peeves",
-      "Ice cream flavors",
-      "Fried foods",
-      "Bodies of water",
-      "Halloween costumes",
-      "Places to go on a date",
-      "Nicknames",
-    ],
-  },
-  unusedCategoryCards: [],
-};
+// const gameState = {
+//   letter: "c",
+//   roundNumber: 1,
+//   submitNextRoundDateTime: Date.now(),
+//   categoryCard: {
+//     categories: [
+//       "A boy’s name",
+//       "Countries",
+//       "Flowers",
+//       "Things that you shout",
+//       "Excuses for being late",
+//       "Pet peeves",
+//       "Ice cream flavors",
+//       "Fried foods",
+//       "Bodies of water",
+//       "Halloween costumes",
+//       "Places to go on a date",
+//       "Nicknames",
+//     ],
+//   },
+//   unusedCategoryCards: [],
+// };
 
-export default function GamePage() {
-  const [roundTimeRemaining, setRoundTimeRemaining] = useState("");
+export default function GamePage({ gameState }) {
+  const [roundTimeRemaining, setRoundTimeRemaining] = useState("3:00");
+
   const foo = useInterval(() => {
-    console.log(gameState.submitNextRoundDateTime);
-    setRoundTimeRemaining("2:32");
+    const timeLeft = Math.max(
+      Math.round((gameState.submitNextRoundTimeLimit - Date.now()) / 1000),
+      0,
+    );
+
+    const secondsLeft = timeLeft % 60;
+    const minutesLeft = Math.floor(timeLeft / 60);
+    const formattedSecondsLeft =
+      secondsLeft < 10 ? "0" + secondsLeft : secondsLeft;
+
+    setRoundTimeRemaining(minutesLeft + ":" + formattedSecondsLeft);
   }, 1000);
 
-  console.log(foo);
+  console.log("foo", foo);
 
   const [words, setWords] = useState([
     "",
