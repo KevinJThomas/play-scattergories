@@ -1,27 +1,21 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using PlayScattergories.Server.Models;
 using PlayScattergories.Server.Models.Player;
 using PlayScattergories.Server.Services;
-using System.Diagnostics;
 
 public class MessageHub : Hub
 {
     public async Task PlayerJoined(string name)
     {
         var id = Context.ConnectionId;
-        var player = new Player
-        {
-            Id = id,
-            Name = name,
-            Points = 0,
-            ScoreSheet = new ScoreSheet()
-        };
+        var player = new Player(id, name);
         var lobby = LobbyService.NewPlayerJoined(player);
 
-        var test = Groups.AddToGroupAsync(id, lobby.Id);
-
-        await Clients.Caller.SendAsync("LobbyUpdated", lobby.Players, Context.ConnectionId);
-        await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
+        if (lobby != null)
+        {
+            await Groups.AddToGroupAsync(id, lobby.Id);
+            await Clients.Caller.SendAsync("LobbyUpdated", lobby.Players, Context.ConnectionId);
+            await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
+        }
     }
 
     public async Task GameStarted()
@@ -47,9 +41,16 @@ public class MessageHub : Hub
 
         if (lobby != null && LobbyService.IsRoundComplete(lobby))
         {
-            var newLobby = LobbyService.ScoreRound(lobby.Id);
+            var scoredLobby = LobbyService.ScoreRound(lobby.Id);
 
-            await Clients.Group(lobby.Id).SendAsync("RoundComplete", lobby);
+            if (scoredLobby != null)
+            {
+                await Clients.Group(lobby.Id).SendAsync("RoundComplete", scoredLobby);
+            }
+            else
+            {
+                await Clients.Group(lobby.Id).SendAsync("GameError", lobby);
+            }
         }
     }
 
@@ -57,6 +58,9 @@ public class MessageHub : Hub
     {
         var lobby = LobbyService.PlayerLeft(Context.ConnectionId);
 
-        await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
+        if (lobby != null && !string.IsNullOrWhiteSpace(lobby.Id) && lobby.Players != null && lobby.Players.Any())
+        {
+            await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
+        }
     }
 }

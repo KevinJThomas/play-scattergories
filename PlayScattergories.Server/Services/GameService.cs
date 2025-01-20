@@ -1,71 +1,58 @@
-﻿using PlayScattergories.Server.Models;
+﻿using PlayScattergories.Server.Helpers;
+using PlayScattergories.Server.Models;
 using PlayScattergories.Server.Models.Game;
 using PlayScattergories.Server.Models.Player;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PlayScattergories.Server.Services
 {
     public static class GameService
     {
-        private static readonly List<CategoryCard> _allCategoryCards = new List<CategoryCard>
-        {
-            new CategoryCard
-            {
-                Categories = new List<string>
-                {
-                    "A girl’s name",
-                    "Capital cities",
-                    "Animals",
-                    "Musical Instruments",
-                    "Gemstones",
-                    "Cartoon Characters",
-                    "Four letter words",
-                    "Brands",
-                    "Things on a beach",
-                    "Websites",
-                    "Cars",
-                    "Things that are sticky"
-                },
-            },
-            new CategoryCard
-            {
-                Categories = new List<string>
-                {
-                    "A boy’s name",
-                    "Countries",
-                    "Flowers",
-                    "Things that you shout",
-                    "Excuses for being late",
-                    "Pet peeves",
-                    "Ice cream flavors",
-                    "Fried foods",
-                    "Bodies of water",
-                    "Halloween costumes",
-                    "Places to go on a date",
-                    "Nicknames"
-                },
-            }
-        };
         private static Random _random = new Random();
 
         #region public methods
 
         public static List<CategoryCard> GetAllCategoryCards()
         {
-            return _allCategoryCards;
+            var categoryLists = ConfigurationHelper.config.GetSection("CategoryLists").GetChildren().Select(x => x.Value).ToList();
+
+            if (categoryLists != null && categoryLists.Any())
+            {
+                var cards = new List<CategoryCard>();
+                foreach (var list in categoryLists)
+                {
+                    cards.Add(new CategoryCard
+                    {
+                        Categories = list.Split(',').ToList()
+                    });
+                }
+
+                return cards;
+            }
+
+            return null;
         }
 
         public static (List<CategoryCard>, CategoryCard) ChooseNextCategoryCard(List<CategoryCard> categoryCards)
         {
             var index = _random.Next(categoryCards.Count);
             var nextCategoryCard = categoryCards[index];
-            categoryCards.RemoveAt(index);
-            return (categoryCards,  nextCategoryCard);
+            var newCardsList = categoryCards;
+            newCardsList.RemoveAt(index);
+            return (newCardsList, nextCategoryCard);
         }
 
-        public static string GetLetter()
+        public static string GetLetter(List<string> usedLetters)
         {
             // Return a random lowercase letter a-z
             var character = (char)('a' + _random.Next(0, 26));
+            if (usedLetters.Contains(character.ToString()))
+            {
+                // If it's a letter that has already been used this game, try again
+                GetLetter(usedLetters);
+            }
+
             return character.ToString();
         }
 
@@ -87,7 +74,7 @@ namespace PlayScattergories.Server.Services
             }
         }
 
-        public static GameState ScoreRound(Lobby lobby)
+        public static Lobby ScoreRound(Lobby lobby)
         {
             if (lobby == null || lobby.GameState == null || lobby.Players == null)
             {
@@ -101,11 +88,78 @@ namespace PlayScattergories.Server.Services
                 return null;
             }
 
+            // Create array of lists with all submitted words
             var submittedWordsArray = PopulateSubmittedWordsArray(lobby, hostsCurrentWords.Count);
-            // Loop through array and create duplicates list for each
-            // Loop through players, scoring their current score sheets, and not counting anything in the duplicate lists
 
-            // continue logic here
+            // Create array of lists for all duplicate words
+            var duplicateWordsArray = new List<string>[hostsCurrentWords.Count];
+
+            // Loop through array and populate duplicates lists
+            for (var i = 0; i < submittedWordsArray.Length; i++)
+            {
+                var duplicates = submittedWordsArray[i].GroupBy(x => x).Where(g => g.Count() > 1).Select(y => y.Key.ToLower()).ToList();
+                if (duplicates == null)
+                {
+                    duplicateWordsArray[i] = new List<string>();
+                }
+                else
+                {
+                    duplicateWordsArray[i] = duplicates;
+                }
+            }
+
+            // Loop through players and give out points for scoring words
+            foreach (var player in lobby.Players)
+            {
+                // Get player words for the round
+                var currentWords = GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+
+                // Loop through words to score them
+                for (var i = 0; i < currentWords.Count; i++)
+                {
+                    // If the word isn't null, and the duplicates array doesn't contain the word, and the word starts with the correct letter
+                    if (currentWords[i] != null && !duplicateWordsArray[i].Contains(currentWords[i].ToLower()) && currentWords[i].Substring(0, 1).ToLower() == lobby.GameState.Letter)
+                    {
+                        player.Points += 1;
+
+                        // Check for multi word answers
+                        var wordSplit = currentWords[i].Split(' ');
+                        if (wordSplit != null && wordSplit.Length > 1)
+                        {
+                            // Start at index 1 here, because we've already given out one point for the starting letter
+                            for (var j = 1; j < wordSplit.Length; j++)
+                            {
+                                if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter)
+                                {
+                                    player.Points += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return lobby;
+        }
+
+        public static Player MarkPlayerAsRoundComplete(Player player, int roundNumber)
+        {
+            if (player != null)
+            {
+                switch (roundNumber)
+                {
+                    case 1:
+                        player.RoundOneSubmitted = true;
+                        return player;
+                    case 2:
+                        player.RoundTwoSubmitted = true;
+                        return player;
+                    case 3:
+                        player.RoundThreeSubmitted = true;
+                        return player;
+                }
+            }
+
             return null;
         }
 
@@ -138,6 +192,10 @@ namespace PlayScattergories.Server.Services
             {
                 foreach (var player in lobby.Players)
                 {
+                    if (submittedWordsArray[i] == null)
+                    {
+                        submittedWordsArray[i] = new List<string>();
+                    }
                     submittedWordsArray[i].Add(GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber)[i]);
                 }
             }

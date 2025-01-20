@@ -13,6 +13,7 @@ namespace PlayScattergories.Server.Models.Game
             RoundOneSubmitted = false;
             RoundTwoSubmitted = false;
             RoundThreeSubmitted = false;
+            UsedLetters = new List<string>();
         }
 
         public string Letter { get; set; }
@@ -23,5 +24,6 @@ namespace PlayScattergories.Server.Models.Game
         public bool RoundTwoSubmitted { get; set; }
         public bool RoundThreeSubmitted { get; set; }
         public long SubmitNextRoundTimeLimit { get; set; }
+        public List<string> UsedLetters { get; set; }
     }
 }

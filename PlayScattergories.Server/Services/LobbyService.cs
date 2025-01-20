@@ -62,7 +62,7 @@ namespace PlayScattergories.Server.Services
                 var (newCategoryCardList, newCategoryCard) = GameService.ChooseNextCategoryCard(_lobbies[lobbyIndex].GameState.UnusedCategoryCards);
                 _lobbies[lobbyIndex].GameState.UnusedCategoryCards = newCategoryCardList;
                 _lobbies[lobbyIndex].GameState.CategoryCard = newCategoryCard;
-                _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter();
+                _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter(_lobbies[lobbyIndex].GameState.UsedLetters);
                 _lobbies[lobbyIndex].GameState.RoundNumber = 1;
                 _lobbies[lobbyIndex].IsWaitingToStart = false;
                 var time = DateTime.Now.AddMinutes(3).ToUniversalTime() - new DateTime(1970, 1, 1);
@@ -100,6 +100,7 @@ namespace PlayScattergories.Server.Services
                 {
                     var index = GetPlayerIndexById(playerId, lobby);
                     lobby.Players[index].ScoreSheet = GameService.PopulateScoreSheet(words, lobby.Players[index].ScoreSheet, lobby.GameState.RoundNumber);
+                    lobby.Players[index] = GameService.MarkPlayerAsRoundComplete(lobby.Players[index], lobby.GameState.RoundNumber);
                     return lobby;
                 }
             }
@@ -175,7 +176,14 @@ namespace PlayScattergories.Server.Services
                 _lobbies[index].GameState != null &&
                 _lobbies[index].Players != null)
             {
-                _lobbies[index].GameState = GameService.ScoreRound(_lobbies[index]);
+                _lobbies[index] = GameService.ScoreRound(_lobbies[index]);
+
+                if (_lobbies[index] != null && !_lobbies[index].GameState.RoundThreeSubmitted)
+                {
+                    _lobbies[index].GameState.UsedLetters.Add(_lobbies[index].GameState.Letter);
+                    _lobbies[index].GameState.Letter = GameService.GetLetter(_lobbies[index].GameState.UsedLetters);
+                }
+
                 return _lobbies[index];
             }
 
