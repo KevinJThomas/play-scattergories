@@ -3,6 +3,7 @@ import Card from "../Card";
 import Header from "../Header";
 import { useState } from "react";
 import useInterval from "use-interval";
+import getTimeTill from "../util";
 
 // const gameState = {
 //   letter: "c",
@@ -37,20 +38,11 @@ export default function GamePage({ gameState, connection }) {
   }
 
   useInterval(() => {
-    console.log("tick");
-    const timeLeft = Math.max(
-      Math.round((gameState.submitNextRoundTimeLimit - Date.now()) / 1000),
-      0,
-    );
+    const timeLeft = getTimeTill(gameState.submitNextRoundTimeLimit);
 
-    const secondsLeft = timeLeft % 60;
-    const minutesLeft = Math.floor(timeLeft / 60);
-    const formattedSecondsLeft =
-      secondsLeft < 10 ? "0" + secondsLeft : secondsLeft;
+    setRoundTimeRemaining(timeLeft);
 
-    setRoundTimeRemaining(minutesLeft + ":" + formattedSecondsLeft);
-
-    if (timeLeft === 0 && !hasSubmitted) {
+    if (timeLeft === "0:00" && !hasSubmitted) {
       submitWords();
     }
   }, 1000);
