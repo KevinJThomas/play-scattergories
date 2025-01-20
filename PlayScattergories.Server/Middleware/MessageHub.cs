@@ -58,7 +58,7 @@ public class MessageHub : Hub
     {
         var lobby = LobbyService.PlayerLeft(Context.ConnectionId);
 
-        if (lobby != null && !string.IsNullOrWhiteSpace(lobby.Id) && lobby.Players != null && lobby.Players.Any())
+        if (lobby != null && lobby.IsActive && lobby.IsWaitingToStart && !string.IsNullOrWhiteSpace(lobby.Id) && lobby.Players != null && lobby.Players.Any())
         {
             await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
         }

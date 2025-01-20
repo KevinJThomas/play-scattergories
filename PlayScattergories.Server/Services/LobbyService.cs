@@ -81,7 +81,7 @@ namespace PlayScattergories.Server.Services
         {
             foreach (var lobby in _lobbies)
             {
-                if (lobby.Players.Any(p => p.Id == id))
+                if (lobby.IsActive && lobby.IsWaitingToStart && lobby.Players.Any(p => p.Id == id))
                 {
                     var index = GetPlayerIndexById(id, lobby);
                     lobby.Players.RemoveAt(index);
