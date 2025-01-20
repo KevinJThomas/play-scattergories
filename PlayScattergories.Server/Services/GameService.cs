@@ -118,7 +118,7 @@ namespace PlayScattergories.Server.Services
                 for (var i = 0; i < currentWords.Count; i++)
                 {
                     // If the word isn't null, and the duplicates array doesn't contain the word, and the word starts with the correct letter
-                    if (currentWords[i] != null && !duplicateWordsArray[i].Contains(currentWords[i].ToLower()) && currentWords[i].Substring(0, 1).ToLower() == lobby.GameState.Letter)
+                    if (!string.IsNullOrWhiteSpace(currentWords[i]) && !duplicateWordsArray[i].Contains(currentWords[i].ToLower()) && currentWords[i].Substring(0, 1).ToLower() == lobby.GameState.Letter)
                     {
                         player.Points += 1;
 
