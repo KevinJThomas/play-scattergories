@@ -65,7 +65,7 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter();
                 _lobbies[lobbyIndex].GameState.RoundNumber = 1;
                 _lobbies[lobbyIndex].IsWaitingToStart = false;
-                _lobbies[lobbyIndex].GameState.SubmitNextRoundDateTime = DateTime.Now.AddMinutes(3);
+                _lobbies[lobbyIndex].GameState.SubmitNextRoundDateTime = DateTimeOffset.Now.AddMinutes(3).ToUnixTimeSeconds();
 
                 return _lobbies[lobbyIndex];
             }
@@ -158,6 +158,20 @@ namespace PlayScattergories.Server.Services
             }
 
             return false;
+        }
+
+        public static Lobby ScoreRound(string lobbyId)
+        {
+            if (string.IsNullOrWhiteSpace(lobbyId))
+            {
+                return null;
+            }
+
+            var index = GetLobbyIndexById(lobbyId);
+
+            // null checks
+            _lobbies[index].GameState = GameService.ScoreRound(_lobbies[index]);
+            return _lobbies[index];
         }
 
         #endregion
