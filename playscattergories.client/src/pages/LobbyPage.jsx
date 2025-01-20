@@ -15,7 +15,7 @@ export default function Lobby({ players, playerId, connection }) {
         <ul role="list" className="divide-y divide-gray-200">
           {players.map((player, index) => (
             <li key={player.id} className="flex gap-x-4 py-1">
-              <div className="flex items-center">
+              <div className="flex w-full min-w-52 items-center">
                 <Avatar name={player.name} />
                 <p className="text-sm/6 text-gray-900">
                   {player.name}
