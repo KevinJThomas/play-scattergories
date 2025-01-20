@@ -30,11 +30,14 @@ public class MessageHub : Hub
 
         if (lobby != null)
         {
-            await Clients.Group(lobby.Id).SendAsync("ConfirmGameStarted", lobby);
-        }
-        else
-        {
-            await Clients.Group(lobby.Id).SendAsync("GameError");
+            if (!lobby.IsWaitingToStart && !lobby.FailedToStart)
+            {
+                await Clients.Group(lobby.Id).SendAsync("ConfirmGameStarted", lobby);
+            }
+            else if (lobby.FailedToStart && !string.IsNullOrWhiteSpace(lobby.Id))
+            {
+                await Clients.Group(lobby.Id).SendAsync("GameError", lobby);
+            }
         }
     }
 

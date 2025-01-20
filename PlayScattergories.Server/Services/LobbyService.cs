@@ -29,29 +29,50 @@ namespace PlayScattergories.Server.Services
             return null;
         }
 
-        public static Lobby? StartLobby(string id)
+        public static Lobby? GameStarted(string playerId)
         {
-            var index = GetLobbyIndexById(id);
+            var lobbyIndex = -1;
+            var lobbyId = string.Empty;
 
-            if (index >= 0 &&
-                index < _lobbies.Count &&
-                _lobbies[index] != null &&
-                !string.IsNullOrWhiteSpace(_lobbies[index].Id) &&
-                _lobbies[index].IsWaitingToStart &&
-                _lobbies[index].IsActive &&
-                _lobbies[index].GameState != null)
+            foreach (var lobby in _lobbies)
             {
-                var (newCategoryCardList, newCategoryCard) = GameService.ChooseNextCategoryCard(_lobbies[index].GameState.UnusedCategoryCards);
-                _lobbies[index].GameState.UnusedCategoryCards = newCategoryCardList;
-                _lobbies[index].GameState.CategoryCard = newCategoryCard;
-                _lobbies[index].GameState.Letter = GameService.GetLetter();
-                _lobbies[index].GameState.RoundNumber = 1;
-                _lobbies[index].IsWaitingToStart = false;
-
-                return _lobbies[index];
+                if (lobby.Players[0].Id == playerId)
+                {
+                    lobbyId = lobby.Id;
+                    lobbyIndex = GetLobbyIndexById(lobbyId);
+                    break;
+                }
             }
 
-            return null;
+            if (lobbyIndex < 0 ||
+                lobbyIndex >= _lobbies.Count ||
+                _lobbies[lobbyIndex] == null ||
+                _lobbies[lobbyIndex].Players == null ||
+                _lobbies[lobbyIndex].Players.Count <= 0 ||
+                _lobbies[lobbyIndex].Players[0].Id != playerId)
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_lobbies[lobbyIndex].Id) &&
+                _lobbies[lobbyIndex].IsWaitingToStart &&
+                _lobbies[lobbyIndex].IsActive &&
+                _lobbies[lobbyIndex].GameState != null)
+            {
+                var (newCategoryCardList, newCategoryCard) = GameService.ChooseNextCategoryCard(_lobbies[lobbyIndex].GameState.UnusedCategoryCards);
+                _lobbies[lobbyIndex].GameState.UnusedCategoryCards = newCategoryCardList;
+                _lobbies[lobbyIndex].GameState.CategoryCard = newCategoryCard;
+                _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter();
+                _lobbies[lobbyIndex].GameState.RoundNumber = 1;
+                _lobbies[lobbyIndex].IsWaitingToStart = false;
+
+                return _lobbies[lobbyIndex];
+            }
+            else
+            {
+                _lobbies[lobbyIndex].FailedToStart = true;
+                return _lobbies[lobbyIndex];
+            }
         }
 
         public static Lobby PlayerLeft(string id)
