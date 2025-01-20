@@ -16,8 +16,6 @@ export default function Avatar({ name }) {
 
   const initials = getInitials(name);
 
-  console.log("uniqolor(name)", uniqolor(name));
-
   return (
     <span
       style={{ backgroundColor: uniqolor(name).color }}

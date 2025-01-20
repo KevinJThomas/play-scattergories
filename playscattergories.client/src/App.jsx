@@ -8,6 +8,8 @@ function App() {
   const [gameStatus, setGameStatus] = useState("namePage");
   const [connection, setConnection] = useState();
   const [error, setError] = useState();
+  const [players, setPlayers] = useState([]);
+  const [playerId, setPlayerId] = useState("");
 
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
@@ -29,7 +31,17 @@ function App() {
     connection
       .start()
       .catch((err) => console.error("Error connecting to hub:", err));
+
+    connection.on("LobbyUpdated", (players, playerId) => {
+      if (playerId) {
+        setGameStatus("lobbyPage");
+        setPlayerId(playerId);
+      }
+      setPlayers(players);
+    });
   }, [connection]);
+
+  console.log(connection);
 
   return (
     <div className="flex h-screen items-center justify-center bg-gradient-to-r from-green-400 to-blue-500">
@@ -41,7 +53,9 @@ function App() {
         />
       )}
       {gameStatus === "errorPage" && <ErrorPage error={error} />}
-      {gameStatus === "lobbyPage" && <LobbyPage />}
+      {gameStatus === "lobbyPage" && (
+        <LobbyPage players={players} playerId={playerId} />
+      )}
     </div>
   );
 }

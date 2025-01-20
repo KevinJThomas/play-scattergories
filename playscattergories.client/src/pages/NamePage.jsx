@@ -16,18 +16,10 @@ export default function NamePage({ connection, setGameStatus, setError }) {
       setGameStatus("errorPage");
       setError(err);
     });
-
-      connection.on("ConfirmPlayerJoined", (message) => {
-          console.log("Player List: ", message);
-      });
-
-      connection.on("PlayerLeft", (message) => {
-          console.log("Player Left List: ", message);
-      });
   }
   return (
     <div>
-      <Header>scattegories</Header>
+      <Header>Scattergories</Header>
       <Card>
         <h3 className="text-base font-semibold text-gray-900">
           Enter your name.
