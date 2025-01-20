@@ -20,15 +20,22 @@ public class MessageHub : Hub
 
         var test = Groups.AddToGroupAsync(id, lobby.Id);
 
-        await Clients.Caller.SendAsync("LobbyUpdated", lobby.Players, true);
+        await Clients.Caller.SendAsync("LobbyUpdated", lobby.Players, Context.ConnectionId);
         await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
     }
 
-    public async Task StartLobby(string lobbyId)
+    public async Task GameStarted()
     {
-        var lobby = LobbyService.StartLobby(lobbyId);
+        var lobby = LobbyService.GameStarted(Context.ConnectionId);
 
-        await Clients.All.SendAsync("ConfirmStartLobby", lobby);
+        if (lobby != null)
+        {
+            await Clients.Group(lobby.Id).SendAsync("ConfirmGameStarted", lobby);
+        }
+        else
+        {
+            await Clients.Group(lobby.Id).SendAsync("GameError");
+        }
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
