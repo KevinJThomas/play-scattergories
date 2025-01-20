@@ -2,14 +2,13 @@
 using PlayScattergories.Server.Models;
 using PlayScattergories.Server.Models.Game;
 using PlayScattergories.Server.Models.Player;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PlayScattergories.Server.Services
 {
     public static class GameService
     {
         private static Random _random = new Random();
+        private static readonly List<string> _articles = ConfigurationHelper.config.GetSection("CategoryLists").GetChildren().Select(x => x.Value).ToList();
 
         #region public methods
 
@@ -119,25 +118,43 @@ namespace PlayScattergories.Server.Services
                 for (var i = 0; i < currentWords.Count; i++)
                 {
                     // If the word isn't null, and the duplicates array doesn't contain the word, and the word starts with the correct letter
-                    if (!string.IsNullOrWhiteSpace(currentWords[i]) && !duplicateWordsArray[i].Contains(currentWords[i].ToLower()) && currentWords[i].Substring(0, 1).ToLower() == lobby.GameState.Letter)
+                    if (!string.IsNullOrWhiteSpace(currentWords[i]))
                     {
-                        player.RoundPoints += 1;
-                        player.TotalPoints += 1;
-
-                        // Check for multi word answers
                         var wordSplit = currentWords[i].Split(' ');
-                        if (wordSplit != null && wordSplit.Length > 1)
+                        var wordToScore = string.Empty;
+
+                        // Remove starting article if present
+                        if (wordSplit.Length > 1 && _articles.Contains(wordSplit[0]))
                         {
-                            // Start at index 1 here, because we've already given out one point for the starting letter
-                            for (var j = 1; j < wordSplit.Length; j++)
+                            var listWithoutArticle = new List<string>(wordSplit);
+                            listWithoutArticle.RemoveAt(0);
+                            wordSplit = listWithoutArticle.ToArray();
+                        }
+
+                        wordToScore = string.Join(" ", wordSplit);
+
+                        if (!duplicateWordsArray[i].Contains(wordToScore.ToLower()) && wordToScore.Substring(0, 1).ToLower() == lobby.GameState.Letter.ToLower())
+                        {
+                            player.RoundPoints += 1;
+                            player.TotalPoints += 1;
+
+                            if (ConfigurationHelper.config.GetValue<bool>("App:ExtraPointsEnabled"))
                             {
-                                if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter)
+                                // Check for multi word answers
+                                if (wordSplit != null && wordSplit.Length > 1)
                                 {
-                                    player.RoundPoints += 1;
-                                    player.TotalPoints += 1;
+                                    // Start at index 1 here, because we've already given out one point for the starting letter
+                                    for (var j = 1; j < wordSplit.Length; j++)
+                                    {
+                                        if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter)
+                                        {
+                                            player.RoundPoints += 1;
+                                            player.TotalPoints += 1;
+                                        }
+                                    }
                                 }
                             }
-                        }
+                        }                        
                     }
                 }
             }

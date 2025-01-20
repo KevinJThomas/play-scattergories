@@ -61,7 +61,7 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex].GameState.UnusedCategoryCards = newCategoryCardList;
                 _lobbies[lobbyIndex].GameState.CategoryCard = newCategoryCard;
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter(_lobbies[lobbyIndex].GameState.UsedLetters);
-                var time = DateTime.Now.AddMinutes(3).ToUniversalTime() - new DateTime(1970, 1, 1);
+                var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:PlayerMaxPerLobby")).ToUniversalTime() - new DateTime(1970, 1, 1);
                 _lobbies[lobbyIndex].GameState.SubmitNextRoundTimeLimit = (long)(time.TotalMilliseconds + 0.5);
                 if (_lobbies[lobbyIndex].IsWaitingToStart)
                 {
@@ -71,10 +71,6 @@ namespace PlayScattergories.Server.Services
                 else
                 {
                     _lobbies[lobbyIndex].GameState.RoundNumber += 1;
-                    if (_lobbies[lobbyIndex].GameState.RoundNumber > 3)
-                    {
-                        _lobbies[lobbyIndex].IsActive = false;
-                    }
                 }
 
                 return _lobbies[lobbyIndex];
@@ -197,12 +193,6 @@ namespace PlayScattergories.Server.Services
                 _lobbies[index].Players != null)
             {
                 _lobbies[index] = GameService.ScoreRound(_lobbies[index]);
-
-                if (_lobbies[index] != null && !_lobbies[index].GameState.RoundThreeSubmitted)
-                {
-                    _lobbies[index].GameState.UsedLetters.Add(_lobbies[index].GameState.Letter);
-                    _lobbies[index].GameState.Letter = GameService.GetLetter(_lobbies[index].GameState.UsedLetters);
-                }
 
                 return _lobbies[index];
             }
