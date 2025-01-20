@@ -47,6 +47,8 @@ namespace PlayScattergories.Server.Services
         };
         private static Random _random = new Random();
 
+        #region public methods
+
         public static List<CategoryCard> GetAllCategoryCards()
         {
             return _allCategoryCards;
@@ -87,7 +89,62 @@ namespace PlayScattergories.Server.Services
 
         public static GameState ScoreRound(Lobby lobby)
         {
-            return new GameState();
+            if (lobby == null || lobby.GameState == null || lobby.Players == null)
+            {
+                return null;
+            }
+
+            var hostsCurrentWords = GetPlayerScoreSheetByRound(lobby.Players[0].ScoreSheet, lobby.GameState.RoundNumber);
+
+            if (hostsCurrentWords == null)
+            {
+                return null;
+            }
+
+            var submittedWordsArray = PopulateSubmittedWordsArray(lobby, hostsCurrentWords.Count);
+            // Loop through array and create duplicates list for each
+            // Loop through players, scoring their current score sheets, and not counting anything in the duplicate lists
+
+            // continue logic here
+            return null;
         }
+
+        #endregion
+
+        #region private methods
+
+        private static List<string> GetPlayerScoreSheetByRound(ScoreSheet scoreSheet, int roundNumber)
+        {
+            if (scoreSheet != null)
+            {
+                switch (roundNumber)
+                {
+                    case 1:
+                        return scoreSheet.RoundOne;
+                    case 2:
+                        return scoreSheet.RoundTwo;
+                    case 3:
+                        return scoreSheet.RoundThree;
+                }
+            }
+
+            return null;
+        }
+
+        private static List<string>[] PopulateSubmittedWordsArray(Lobby lobby, int arraySize)
+        {
+            var submittedWordsArray = new List<string>[arraySize];
+            for (var i = 0; i < arraySize; i++)
+            {
+                foreach (var player in lobby.Players)
+                {
+                    submittedWordsArray[i].Add(GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber)[i]);
+                }
+            }
+
+            return submittedWordsArray;
+        }
+
+        #endregion
     }
 }
