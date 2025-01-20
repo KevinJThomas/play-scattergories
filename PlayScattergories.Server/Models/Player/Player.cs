@@ -8,6 +8,7 @@
             Name = name;
             Points = 0;
             ScoreSheet = new ScoreSheet();
+            IsActive = true;
         }
 
         public string Id { get; set; }
@@ -17,5 +18,6 @@
         public bool RoundOneSubmitted { get; set; }
         public bool RoundTwoSubmitted { get; set; }
         public bool RoundThreeSubmitted { get; set; }
+        public bool IsActive { get; set; }
     }
 }

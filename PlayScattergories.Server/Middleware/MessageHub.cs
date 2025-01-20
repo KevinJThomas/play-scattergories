@@ -18,15 +18,22 @@ public class MessageHub : Hub
         }
     }
 
-    public async Task GameStarted()
+    public async Task NextRound()
     {
-        var lobby = LobbyService.GameStarted(Context.ConnectionId);
+        var lobby = LobbyService.NextRound(Context.ConnectionId);
 
         if (lobby != null)
         {
             if (!lobby.IsWaitingToStart && !lobby.FailedToStart)
             {
-                await Clients.Group(lobby.Id).SendAsync("ConfirmGameStarted", lobby);
+                if (lobby.IsActive)
+                {
+                    await Clients.Group(lobby.Id).SendAsync("ConfirmNextRound", lobby);
+                }
+                else
+                {
+                    await Clients.Group(lobby.Id).SendAsync("GameComplete", lobby);
+                }
             }
             else if (lobby.FailedToStart && !string.IsNullOrWhiteSpace(lobby.Id))
             {

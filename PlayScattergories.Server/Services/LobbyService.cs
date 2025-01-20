@@ -1,7 +1,6 @@
 ﻿using PlayScattergories.Server.Helpers;
 using PlayScattergories.Server.Models;
 using PlayScattergories.Server.Models.Player;
-using System.Numerics;
 
 namespace PlayScattergories.Server.Services
 {
@@ -29,7 +28,7 @@ namespace PlayScattergories.Server.Services
             return null;
         }
 
-        public static Lobby? GameStarted(string playerId)
+        public static Lobby? NextRound(string playerId)
         {
             var lobbyIndex = -1;
             var lobbyId = string.Empty;
@@ -55,7 +54,6 @@ namespace PlayScattergories.Server.Services
             }
 
             if (!string.IsNullOrWhiteSpace(_lobbies[lobbyIndex].Id) &&
-                _lobbies[lobbyIndex].IsWaitingToStart &&
                 _lobbies[lobbyIndex].IsActive &&
                 _lobbies[lobbyIndex].GameState != null)
             {
@@ -63,10 +61,21 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex].GameState.UnusedCategoryCards = newCategoryCardList;
                 _lobbies[lobbyIndex].GameState.CategoryCard = newCategoryCard;
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter(_lobbies[lobbyIndex].GameState.UsedLetters);
-                _lobbies[lobbyIndex].GameState.RoundNumber = 1;
-                _lobbies[lobbyIndex].IsWaitingToStart = false;
                 var time = DateTime.Now.AddMinutes(3).ToUniversalTime() - new DateTime(1970, 1, 1);
                 _lobbies[lobbyIndex].GameState.SubmitNextRoundTimeLimit = (long)(time.TotalMilliseconds + 0.5);
+                if (_lobbies[lobbyIndex].IsWaitingToStart)
+                {
+                    _lobbies[lobbyIndex].GameState.RoundNumber = 1;
+                    _lobbies[lobbyIndex].IsWaitingToStart = false;
+                }
+                else
+                {
+                    _lobbies[lobbyIndex].GameState.RoundNumber += 1;
+                    if (_lobbies[lobbyIndex].GameState.RoundNumber > 3)
+                    {
+                        _lobbies[lobbyIndex].IsActive = false;
+                    }
+                }
 
                 return _lobbies[lobbyIndex];
             }
@@ -81,11 +90,22 @@ namespace PlayScattergories.Server.Services
         {
             foreach (var lobby in _lobbies)
             {
-                if (lobby.IsActive && lobby.IsWaitingToStart && lobby.Players.Any(p => p.Id == id))
+                if (lobby.IsActive && lobby.Players.Any(p => p.Id == id))
                 {
-                    var index = GetPlayerIndexById(id, lobby);
-                    lobby.Players.RemoveAt(index);
-                    return lobby;
+                    if (lobby.IsWaitingToStart)
+                    {
+                        // If the lobby hasn't started yet, remove the player from the lobby
+                        var index = GetPlayerIndexById(id, lobby);
+                        lobby.Players.RemoveAt(index);
+                        return lobby;
+                    }
+                    else
+                    {
+                        // If the lobby has started, mark the player as inactive
+                        var index = GetPlayerIndexById(id, lobby);
+                        lobby.Players[index].IsActive = false;
+                        return null;
+                    }
                 }
             }
 
@@ -115,7 +135,7 @@ namespace PlayScattergories.Server.Services
                 switch (lobby.GameState.RoundNumber)
                 {
                     case 1:
-                        if (lobby.Players.Any(x => !x.RoundOneSubmitted) || lobby.GameState.RoundOneSubmitted)
+                        if (lobby.Players.Any(x => !x.RoundOneSubmitted && x.IsActive) || lobby.GameState.RoundOneSubmitted)
                         {
                             return false;
                         }
