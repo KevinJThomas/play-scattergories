@@ -4,9 +4,51 @@
     {
         public ScoreSheet()
         {
-            RoundOne = new List<string>();
-            RoundTwo = new List<string>();
-            RoundThree = new List<string>();
+            RoundOne = new List<string>
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            };
+            RoundTwo = new List<string>
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            };
+            RoundThree = new List<string>
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            };
         }
 
         public List<string> RoundOne { get; set; }
