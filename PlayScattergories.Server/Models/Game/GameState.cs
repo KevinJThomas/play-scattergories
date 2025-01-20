@@ -22,6 +22,6 @@ namespace PlayScattergories.Server.Models.Game
         public bool RoundOneSubmitted { get; set; }
         public bool RoundTwoSubmitted { get; set; }
         public bool RoundThreeSubmitted { get; set; }
-        public DateTime SubmitNextRoundDateTime { get; set; }
+        public long SubmitNextRoundDateTime { get; set; }
     }
 }
