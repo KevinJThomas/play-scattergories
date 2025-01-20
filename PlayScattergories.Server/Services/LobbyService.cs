@@ -168,10 +168,16 @@ namespace PlayScattergories.Server.Services
             }
 
             var index = GetLobbyIndexById(lobbyId);
+            if (index >= 0 &&
+                index < _lobbies.Count &&
+                _lobbies[index] != null &&
+                _lobbies[index].GameState != null)
+            {
+                _lobbies[index].GameState = GameService.ScoreRound(_lobbies[index]);
+                return _lobbies[index];
+            }
 
-            // null checks
-            _lobbies[index].GameState = GameService.ScoreRound(_lobbies[index]);
-            return _lobbies[index];
+            return null;
         }
 
         #endregion

@@ -47,6 +47,8 @@ public class MessageHub : Hub
 
         if (lobby != null && LobbyService.IsRoundComplete(lobby))
         {
+            var newLobby = LobbyService.ScoreRound(lobby.Id);
+
             await Clients.Group(lobby.Id).SendAsync("RoundComplete", lobby);
         }
     }

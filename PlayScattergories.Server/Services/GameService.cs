@@ -1,4 +1,5 @@
-﻿using PlayScattergories.Server.Models.Game;
+﻿using PlayScattergories.Server.Models;
+using PlayScattergories.Server.Models.Game;
 using PlayScattergories.Server.Models.Player;
 
 namespace PlayScattergories.Server.Services
@@ -82,6 +83,11 @@ namespace PlayScattergories.Server.Services
                 default:
                     return scoreSheet;
             }
+        }
+
+        public static GameState ScoreRound(Lobby lobby)
+        {
+            return new GameState();
         }
     }
 }
