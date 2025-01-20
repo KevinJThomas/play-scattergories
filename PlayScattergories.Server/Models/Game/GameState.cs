@@ -1,4 +1,5 @@
-﻿using PlayScattergories.Server.Services;
+﻿using PlayScattergories.Server.Helpers;
+using PlayScattergories.Server.Services;
 
 namespace PlayScattergories.Server.Models.Game
 {
@@ -13,7 +14,7 @@ namespace PlayScattergories.Server.Models.Game
             RoundOneSubmitted = false;
             RoundTwoSubmitted = false;
             RoundThreeSubmitted = false;
-            UsedLetters = new List<string>();
+            UsedLetters = ConfigurationHelper.config.GetSection("ExcludedLetters").GetChildren().Select(x => x.Value.ToLower()).ToList();
         }
 
         public string Letter { get; set; }
@@ -24,6 +25,7 @@ namespace PlayScattergories.Server.Models.Game
         public bool RoundTwoSubmitted { get; set; }
         public bool RoundThreeSubmitted { get; set; }
         public long SubmitNextRoundTimeLimit { get; set; }
+        public long SubmitNextVoteTimeLimit { get; set; }
         public List<string> UsedLetters { get; set; }
     }
 }

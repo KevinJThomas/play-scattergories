@@ -60,8 +60,9 @@ namespace PlayScattergories.Server.Services
                 var (newCategoryCardList, newCategoryCard) = GameService.ChooseNextCategoryCard(_lobbies[lobbyIndex].GameState.UnusedCategoryCards);
                 _lobbies[lobbyIndex].GameState.UnusedCategoryCards = newCategoryCardList;
                 _lobbies[lobbyIndex].GameState.CategoryCard = newCategoryCard;
+                _lobbies[lobbyIndex].GameState.UsedLetters.Add(_lobbies[lobbyIndex].GameState.Letter);
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter(_lobbies[lobbyIndex].GameState.UsedLetters);
-                var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:PlayerMaxPerLobby")).ToUniversalTime() - new DateTime(1970, 1, 1);
+                var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:GameLengthInMinutes")).ToUniversalTime() - new DateTime(1970, 1, 1);
                 _lobbies[lobbyIndex].GameState.SubmitNextRoundTimeLimit = (long)(time.TotalMilliseconds + 0.5);
                 if (_lobbies[lobbyIndex].IsWaitingToStart)
                 {

@@ -8,23 +8,29 @@ namespace PlayScattergories.Server.Services
     public static class GameService
     {
         private static Random _random = new Random();
-        private static readonly List<string> _articles = ConfigurationHelper.config.GetSection("CategoryLists").GetChildren().Select(x => x.Value).ToList();
+        private static readonly List<string> _articles = ConfigurationHelper.config.GetSection("Articles").GetChildren().Select(x => x.Value).ToList();
 
         #region public methods
 
         public static List<CategoryCard> GetAllCategoryCards()
         {
-            var categoryLists = ConfigurationHelper.config.GetSection("CategoryLists").GetChildren().Select(x => x.Value).ToList();
+            var categoryList = ConfigurationHelper.config.GetValue<string>("CategoryList");
 
-            if (categoryLists != null && categoryLists.Any())
+            if (categoryList != null && categoryList.Any())
             {
+                var allCategories = categoryList.Split(',').ToList();
+                var categoryCardLength = ConfigurationHelper.config.GetValue<int>("App:CategoryCardLength");
                 var cards = new List<CategoryCard>();
-                foreach (var list in categoryLists)
+                while (allCategories.Any() && allCategories.Count() >= categoryCardLength)
                 {
-                    cards.Add(new CategoryCard
+                    var card = new CategoryCard();
+                    for (var i = 0; i < categoryCardLength; i++)
                     {
-                        Categories = list.Split(',').ToList()
-                    });
+                        var index = _random.Next(allCategories.Count);
+                        card.Categories.Add(allCategories[index]);
+                        allCategories.RemoveAt(index);
+                    }
+                    cards.Add(card);
                 }
 
                 return cards;
@@ -57,16 +63,33 @@ namespace PlayScattergories.Server.Services
 
         public static ScoreSheet PopulateScoreSheet(List<string> words, ScoreSheet scoreSheet, int roundNumber)
         {
+            if (scoreSheet == null || words == null)
+            {
+                return null;
+            }
+
             switch (roundNumber)
             {
                 case 1:
-                    scoreSheet.RoundOne = words;
+                    scoreSheet.RoundOne = new List<Word>();
+                    foreach (var word in words)
+                    {
+                        scoreSheet.RoundOne.Add(new Word { Value = word, IsValid = false });
+                    }
                     return scoreSheet;
                 case 2:
-                    scoreSheet.RoundTwo = words;
+                    scoreSheet.RoundTwo = new List<Word>();
+                    foreach (var word in words)
+                    {
+                        scoreSheet.RoundTwo.Add(new Word { Value = word, IsValid = false });
+                    }
                     return scoreSheet;
                 case 3:
-                    scoreSheet.RoundThree = words;
+                    scoreSheet.RoundThree = new List<Word>();
+                    foreach (var word in words)
+                    {
+                        scoreSheet.RoundThree.Add(new Word { Value = word, IsValid = false });
+                    }
                     return scoreSheet;
                 default:
                     return scoreSheet;
@@ -117,10 +140,10 @@ namespace PlayScattergories.Server.Services
                 // Loop through words to score them
                 for (var i = 0; i < currentWords.Count; i++)
                 {
-                    // If the word isn't null, and the duplicates array doesn't contain the word, and the word starts with the correct letter
-                    if (!string.IsNullOrWhiteSpace(currentWords[i]))
+                    // If the word isn't null
+                    if (!string.IsNullOrWhiteSpace(currentWords[i].Value))
                     {
-                        var wordSplit = currentWords[i].Split(' ');
+                        var wordSplit = currentWords[i].Value.Split(' ');
                         var wordToScore = string.Empty;
 
                         // Remove starting article if present
@@ -133,8 +156,10 @@ namespace PlayScattergories.Server.Services
 
                         wordToScore = string.Join(" ", wordSplit);
 
+                        // If the duplicates array doesn't contain the word, and the word starts with the correct letter
                         if (!duplicateWordsArray[i].Contains(wordToScore.ToLower()) && wordToScore.Substring(0, 1).ToLower() == lobby.GameState.Letter.ToLower())
                         {
+                            currentWords[i].IsValid = true;
                             player.RoundPoints += 1;
                             player.TotalPoints += 1;
 
@@ -154,11 +179,19 @@ namespace PlayScattergories.Server.Services
                                     }
                                 }
                             }
-                        }                        
+                        }
+                        else
+                        {
+                            currentWords[i].IsValid = false;
+                        }
                     }
                 }
+
+                player.ScoreSheet = UpdatePlayerScoreSheetByRound(player.ScoreSheet, currentWords, lobby.GameState.RoundNumber);
             }
 
+            var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:VoteLengthInMinutes")).ToUniversalTime() - new DateTime(1970, 1, 1);
+            lobby.GameState.SubmitNextVoteTimeLimit = (long)(time.TotalMilliseconds + 0.5);
             return lobby;
         }
 
@@ -187,7 +220,7 @@ namespace PlayScattergories.Server.Services
 
         #region private methods
 
-        private static List<string> GetPlayerScoreSheetByRound(ScoreSheet scoreSheet, int roundNumber)
+        private static List<Word> GetPlayerScoreSheetByRound(ScoreSheet scoreSheet, int roundNumber)
         {
             if (scoreSheet != null)
             {
@@ -216,11 +249,34 @@ namespace PlayScattergories.Server.Services
                     {
                         submittedWordsArray[i] = new List<string>();
                     }
-                    submittedWordsArray[i].Add(GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber)[i]);
+                    submittedWordsArray[i].Add(GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber)[i].Value);
                 }
             }
 
             return submittedWordsArray;
+        }
+
+        private static ScoreSheet UpdatePlayerScoreSheetByRound(ScoreSheet scoreSheet, List<Word> words, int roundNumber)
+        {
+            if (scoreSheet == null || words == null)
+            {
+                return null;
+            }
+
+            switch (roundNumber)
+            {
+                case 1:
+                    scoreSheet.RoundOne = words;
+                    break;
+                case 2:
+                    scoreSheet.RoundTwo = words;
+                    break;
+                case 3:
+                    scoreSheet.RoundThree = words;
+                    break;
+            }
+
+            return scoreSheet;
         }
 
         #endregion

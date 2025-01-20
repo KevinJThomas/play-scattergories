@@ -4,55 +4,55 @@
     {
         public ScoreSheet()
         {
-            RoundOne = new List<string>
+            RoundOne = new List<Word>
             {
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false }
             };
-            RoundTwo = new List<string>
+            RoundTwo = new List<Word>
             {
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false }
             };
-            RoundThree = new List<string>
+            RoundThree = new List<Word>
             {
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty,
-                string.Empty
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false },
+                new Word { Value = string.Empty, IsValid = false }
             };
         }
 
-        public List<string> RoundOne { get; set; }
-        public List<string> RoundTwo { get; set; }
-        public List<string> RoundThree { get; set; }
+        public List<Word> RoundOne { get; set; }
+        public List<Word> RoundTwo { get; set; }
+        public List<Word> RoundThree { get; set; }
     }
 }
