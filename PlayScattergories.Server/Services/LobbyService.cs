@@ -65,7 +65,7 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter();
                 _lobbies[lobbyIndex].GameState.RoundNumber = 1;
                 _lobbies[lobbyIndex].IsWaitingToStart = false;
-                var time = DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1).AddMinutes(3);
+                var time = DateTime.Now.AddMinutes(3).ToUniversalTime() - new DateTime(1970, 1, 1);
                 _lobbies[lobbyIndex].GameState.SubmitNextRoundTimeLimit = (long)(time.TotalMilliseconds + 0.5);
 
                 return _lobbies[lobbyIndex];
