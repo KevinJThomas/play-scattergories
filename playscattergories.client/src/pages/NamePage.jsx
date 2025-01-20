@@ -16,14 +16,6 @@ export default function NamePage({ connection, setGameStatus, setError }) {
       setGameStatus("errorPage");
       setError(err);
     });
-
-      connection.on("ConfirmPlayerJoined", (message) => {
-          console.log("Player List: ", message);
-      });
-
-      connection.on("PlayerLeft", (message) => {
-          console.log("Player Left List: ", message);
-      });
   }
   return (
     <div>
