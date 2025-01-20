@@ -16,9 +16,12 @@ public class MessageHub : Hub
             Points = 0,
             ScoreSheet = new ScoreSheet()
         };
-        var playerList = LobbyService.NewPlayerJoined(player);
+        var lobby = LobbyService.NewPlayerJoined(player);
 
-        await Clients.All.SendAsync("ConfirmPlayerJoined", playerList);
+        var test = Groups.AddToGroupAsync(id, lobby.Id);
+
+        await Clients.Caller.SendAsync("LobbyUpdated", lobby.Players, true);
+        await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
     }
 
     public async Task StartLobby(string lobbyId)

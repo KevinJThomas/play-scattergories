@@ -12,7 +12,7 @@ namespace PlayScattergories.Server.Services
 
         #region public methods
 
-        public static List<Player> NewPlayerJoined(Player player)
+        public static Lobby NewPlayerJoined(Player player)
         {
             ClearInactiveLobbies();
             var availableLobby = FindAvailableLobby();
@@ -22,7 +22,7 @@ namespace PlayScattergories.Server.Services
                 if (index >= 0 && index < _lobbies.Count)
                 {
                     _lobbies[index].Players.Add(player);
-                    return _lobbies[index].Players;
+                    return _lobbies[index];
                 }
             }
 
