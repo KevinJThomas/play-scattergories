@@ -54,6 +54,25 @@ public class MessageHub : Hub
         }
     }
 
+    public async Task VoteSubmitted(List<string> words)
+    {
+        var lobby = LobbyService.VotesSubmitted(Context.ConnectionId, words);
+
+        if (lobby != null && LobbyService.IsVotingComplete(lobby))
+        {
+            var scoredLobby = LobbyService.ScoreVotes(lobby.Id);
+
+            if (scoredLobby != null)
+            {
+                await Clients.Group(lobby.Id).SendAsync("VoteComplete", scoredLobby);
+            }
+            else
+            {
+                await Clients.Group(lobby.Id).SendAsync("GameError", lobby);
+            }
+        }
+    }
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var lobby = LobbyService.PlayerLeft(Context.ConnectionId);

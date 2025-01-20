@@ -1,5 +1,6 @@
 ﻿using PlayScattergories.Server.Helpers;
 using PlayScattergories.Server.Models;
+using PlayScattergories.Server.Models.Game;
 using PlayScattergories.Server.Models.Player;
 
 namespace PlayScattergories.Server.Services
@@ -146,7 +147,7 @@ namespace PlayScattergories.Server.Services
 
                         return false;
                     case 2:
-                        if (lobby.Players.Any(x => !x.RoundTwoSubmitted))
+                        if (lobby.Players.Any(x => !x.RoundTwoSubmitted && x.IsActive) || lobby.GameState.RoundTwoSubmitted)
                         {
                             return false;
                         }
@@ -160,7 +161,7 @@ namespace PlayScattergories.Server.Services
 
                         return false;
                     case 3:
-                        if (lobby.Players.Any(x => !x.RoundThreeSubmitted))
+                        if (lobby.Players.Any(x => !x.RoundThreeSubmitted && x.IsActive) || lobby.GameState.RoundThreeSubmitted)
                         {
                             return false;
                         }
@@ -194,6 +195,82 @@ namespace PlayScattergories.Server.Services
                 _lobbies[index].Players != null)
             {
                 _lobbies[index] = GameService.ScoreRound(_lobbies[index]);
+
+                return _lobbies[index];
+            }
+
+            return null;
+        }
+
+        public static Lobby VotesSubmitted(string playerId, List<string> words)
+        {
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby.Players.Any(p => p.Id == playerId) && lobby.GameState != null)
+                {
+                    if (lobby.GameState.Votes == null)
+                    {
+                        lobby.GameState.Votes = new List<Vote>();
+                    }
+
+                    foreach (var word in words)
+                    {
+                        if (lobby.GameState.Votes.Any(x => x.Word.ToLower() == word.ToLower()))
+                        {
+                            // If the word has already been voted for, increment count
+                            var vote = lobby.GameState.Votes.Where(x => x.Word == word).FirstOrDefault();
+                            var voteIndex = lobby.GameState.Votes.FindIndex(x => x == vote);
+                            lobby.GameState.Votes[voteIndex].Count += 1;
+                        }
+                        else
+                        {
+                            // If the word hasn't already been voted for, add it to the list
+                            lobby.GameState.Votes.Add(new Vote { Word = word, Count = 1 });
+                        }
+                    }
+
+                    var index = GetPlayerIndexById(playerId, lobby);
+                    lobby.Players[index] = GameService.MarkPlayerAsVotingComplete(lobby.Players[index], lobby.GameState.RoundNumber);
+                    return lobby;
+                }
+            }
+
+            return null;
+        }
+
+        public static bool IsVotingComplete(Lobby lobby)
+        {
+            if (lobby != null && lobby.GameState != null)
+            {
+                switch (lobby.GameState.RoundNumber)
+                {
+                    case 1:
+                        return !lobby.Players.Any(x => !x.RoundOneVoted && x.IsActive);
+                    case 2:
+                        return !lobby.Players.Any(x => !x.RoundTwoVoted && x.IsActive);
+                    case 3:
+                        return !lobby.Players.Any(x => !x.RoundThreeVoted && x.IsActive);
+                }
+            }
+
+            return false;
+        }
+
+        public static Lobby ScoreVotes(string lobbyId)
+        {
+            if (string.IsNullOrWhiteSpace(lobbyId))
+            {
+                return null;
+            }
+
+            var index = GetLobbyIndexById(lobbyId);
+            if (index >= 0 &&
+                index < _lobbies.Count &&
+                _lobbies[index] != null &&
+                _lobbies[index].GameState != null &&
+                _lobbies[index].Players != null)
+            {
+                _lobbies[index] = GameService.ScoreVotes(_lobbies[index]);
 
                 return _lobbies[index];
             }

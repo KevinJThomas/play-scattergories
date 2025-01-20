@@ -27,5 +27,7 @@ namespace PlayScattergories.Server.Models.Game
         public long SubmitNextRoundTimeLimit { get; set; }
         public long SubmitNextVoteTimeLimit { get; set; }
         public List<string> UsedLetters { get; set; }
+        public List<Vote> Votes { get; set; } = new List<Vote>();
+        public List<string> BannedWords { get; set; } = new List<string>();
     }
 }

@@ -171,7 +171,7 @@ namespace PlayScattergories.Server.Services
                                     // Start at index 1 here, because we've already given out one point for the starting letter
                                     for (var j = 1; j < wordSplit.Length; j++)
                                     {
-                                        if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter)
+                                        if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter && !_articles.Contains(wordSplit[j]))
                                         {
                                             player.RoundPoints += 1;
                                             player.TotalPoints += 1;
@@ -214,6 +214,108 @@ namespace PlayScattergories.Server.Services
             }
 
             return null;
+        }
+
+        public static Player MarkPlayerAsVotingComplete(Player player, int roundNumber)
+        {
+            if (player != null)
+            {
+                switch (roundNumber)
+                {
+                    case 1:
+                        player.RoundOneVoted = true;
+                        return player;
+                    case 2:
+                        player.RoundTwoVoted = true;
+                        return player;
+                    case 3:
+                        player.RoundThreeVoted = true;
+                        return player;
+                }
+            }
+
+            return null;
+        }
+
+        public static Lobby ScoreVotes(Lobby lobby)
+        {
+            if (lobby == null || lobby.GameState == null)
+            {
+                return null;
+            }
+
+            var numberOfVotesToBan = (lobby.Players.Count + 1) / 2;
+
+            // Loop through votes and add words with enough votes to the banned list
+            foreach (var vote in lobby.GameState.Votes)
+            {
+                if (vote.Count >= numberOfVotesToBan)
+                {
+                    lobby.GameState.BannedWords.Add(vote.Word.ToLower());
+                }
+            }
+
+            // Loop through players and remove points for each word on the banned list
+            foreach (var player in lobby.Players)
+            {
+                var words = GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+
+                if (words != null && words.Any())
+                {
+                    foreach (var word in words)
+                    {
+                        if (lobby.GameState.BannedWords.Contains(word.Value.ToLower()))
+                        {
+                            word.IsValid = false;
+                            if (player.RoundPoints > 0)
+                            {
+                                player.RoundPoints -= 1;
+                            }
+                            if (player.TotalPoints > 0)
+                            {
+                                player.TotalPoints -= 1;
+                            }
+
+                            if (ConfigurationHelper.config.GetValue<bool>("App:ExtraPointsEnabled"))
+                            {
+                                var wordSplit = word.Value.Split(' ');
+
+                                // Remove starting article if present
+                                if (wordSplit.Length > 1 && _articles.Contains(wordSplit[0]))
+                                {
+                                    var listWithoutArticle = new List<string>(wordSplit);
+                                    listWithoutArticle.RemoveAt(0);
+                                    wordSplit = listWithoutArticle.ToArray();
+                                }
+
+                                // Check for multi word answers
+                                if (wordSplit != null && wordSplit.Length > 1)
+                                {
+                                    // Start at index 1 here, because we've already taken away one point for the starting letter
+                                    for (var j = 1; j < wordSplit.Length; j++)
+                                    {
+                                        if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter && !_articles.Contains(wordSplit[j]))
+                                        {
+                                            if (player.RoundPoints > 0)
+                                            {
+                                                player.RoundPoints -= 1;
+                                            }
+                                            if (player.TotalPoints > 0)
+                                            {
+                                                player.TotalPoints -= 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    player.ScoreSheet = UpdatePlayerScoreSheetByRound(player.ScoreSheet, words, lobby.GameState.RoundNumber);
+                }
+            }
+
+            return lobby;
         }
 
         #endregion
