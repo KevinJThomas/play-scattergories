@@ -103,18 +103,13 @@ namespace PlayScattergories.Server.Services
                 return null;
             }
 
-            var hostsCurrentWords = GetPlayerScoreSheetByRound(lobby.Players[0].ScoreSheet, lobby.GameState.RoundNumber);
-
-            if (hostsCurrentWords == null)
-            {
-                return null;
-            }
+            var categoryCardLength = ConfigurationHelper.config.GetValue<int>("App:CategoryCardLength");
 
             // Create array of lists with all submitted words
-            var submittedWordsArray = PopulateSubmittedWordsArray(lobby, hostsCurrentWords.Count);
+            var submittedWordsArray = PopulateSubmittedWordsArray(lobby, categoryCardLength);
 
             // Create array of lists for all duplicate words
-            var duplicateWordsArray = new List<string>[hostsCurrentWords.Count];
+            var duplicateWordsArray = new List<string>[categoryCardLength];
 
             // Loop through array and populate duplicates lists
             for (var i = 0; i < submittedWordsArray.Length; i++)
