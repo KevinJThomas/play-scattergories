@@ -3,6 +3,7 @@ import * as signalR from "@microsoft/signalr";
 import NamePage from "./pages/NamePage";
 import ErrorPage from "./pages/ErrorPage";
 import LobbyPage from "./pages/LobbyPage";
+import GamePage from "./pages/GamePage";
 
 function App() {
   const [gameStatus, setGameStatus] = useState("namePage");
@@ -10,6 +11,7 @@ function App() {
   const [error, setError] = useState();
   const [players, setPlayers] = useState([]);
   const [playerId, setPlayerId] = useState("");
+  const [gameState, setGameState] = useState();
 
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
@@ -28,9 +30,10 @@ function App() {
       return;
     }
 
-    connection
-      .start()
-      .catch((err) => console.error("Error connecting to hub:", err));
+    connection.start().catch((error) => {
+      setError(error);
+      setGameStatus("errorPage");
+    });
 
     connection.on("LobbyUpdated", (players, playerId) => {
       if (playerId) {
@@ -39,12 +42,20 @@ function App() {
       }
       setPlayers(players);
     });
+
+    connection.on("GameError", (error) => {
+      setError(error);
+      setGameStatus("errorPage");
+    });
+
+    connection.on("ConfirmGameStarted", (lobby) => {
+      setGameStatus("gamePage");
+      setGameState(lobby.gameState);
+    });
   }, [connection]);
 
-  console.log(connection);
-
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-green-400 to-blue-500">
+    <div className="grid h-screen grid-cols-1 place-items-center items-center overflow-auto bg-gradient-to-r from-green-400 to-blue-500 py-4">
       {gameStatus === "namePage" && (
         <NamePage
           setGameStatus={setGameStatus}
@@ -54,8 +65,13 @@ function App() {
       )}
       {gameStatus === "errorPage" && <ErrorPage error={error} />}
       {gameStatus === "lobbyPage" && (
-        <LobbyPage players={players} playerId={playerId} />
+        <LobbyPage
+          players={players}
+          playerId={playerId}
+          connection={connection}
+        />
       )}
+      {gameStatus === "gamePage" && <GamePage gameState={gameState} />}
     </div>
   );
 }

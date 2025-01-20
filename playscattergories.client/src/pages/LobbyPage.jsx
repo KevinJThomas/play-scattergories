@@ -3,7 +3,11 @@ import Button from "../Button";
 import Card from "../Card";
 import Header from "../Header";
 
-export default function Lobby({ players, playerId }) {
+export default function Lobby({ players, playerId, connection }) {
+  function startGame() {
+    connection.invoke("GameStarted");
+  }
+
   return (
     <div>
       <Header>Lobby</Header>
@@ -23,12 +27,8 @@ export default function Lobby({ players, playerId }) {
             </li>
           ))}
         </ul>
-        {playerId === players[0].playerId && (
-          <Button
-            fullWidth
-            disabled={players.length <= 1}
-            onClick={() => console.log("start game")}
-          >
+        {playerId === players[0].id && (
+          <Button fullWidth disabled={players.length <= 1} onClick={startGame}>
             Start Game
           </Button>
         )}
