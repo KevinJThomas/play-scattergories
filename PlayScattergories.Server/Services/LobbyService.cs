@@ -54,7 +54,7 @@ namespace PlayScattergories.Server.Services
             return null;
         }
 
-        public static List<Player> PlayerLeft(string id)
+        public static Lobby PlayerLeft(string id)
         {
             foreach (var lobby in _lobbies)
             {
@@ -62,7 +62,7 @@ namespace PlayScattergories.Server.Services
                 {
                     var index = GetPlayerIndexById(id, lobby);
                     lobby.Players.RemoveAt(index);
-                    return lobby.Players;
+                    return lobby;
                 }
             }
 

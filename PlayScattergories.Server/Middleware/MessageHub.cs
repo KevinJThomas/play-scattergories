@@ -33,8 +33,8 @@ public class MessageHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var playerList = LobbyService.PlayerLeft(Context.ConnectionId);
+        var lobby = LobbyService.PlayerLeft(Context.ConnectionId);
 
-        await Clients.All.SendAsync("PlayerLeft", playerList);
+        await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
     }
 }
