@@ -106,22 +106,18 @@ namespace PlayScattergories.Server.Services
             var categoryCardLength = ConfigurationHelper.config.GetValue<int>("App:CategoryCardLength");
 
             // Create array of lists with all submitted words
-            var submittedWordsArray = PopulateSubmittedWordsArray(lobby, categoryCardLength);
+            var submittedWordsList = PopulateSubmittedWordsList(lobby);
 
             // Create array of lists for all duplicate words
-            var duplicateWordsArray = new List<string>[categoryCardLength];
+            var duplicateWordsList = new List<string>();
 
             // Loop through array and populate duplicates lists
-            for (var i = 0; i < submittedWordsArray.Length; i++)
+            for (var i = 0; i < submittedWordsList.Count; i++)
             {
-                var duplicates = submittedWordsArray[i].GroupBy(x => x).Where(g => g.Count() > 1).Select(y => y.Key.ToLower()).ToList();
-                if (duplicates == null)
+                var duplicates = submittedWordsList.GroupBy(x => x).Where(g => g.Count() > 1).Select(y => y.Key.ToLower()).ToList();
+                if (duplicates != null)
                 {
-                    duplicateWordsArray[i] = new List<string>();
-                }
-                else
-                {
-                    duplicateWordsArray[i] = duplicates;
+                    duplicateWordsList = duplicates;
                 }
             }
 
@@ -152,7 +148,7 @@ namespace PlayScattergories.Server.Services
                         wordToScore = string.Join(" ", wordSplit);
 
                         // If the duplicates array doesn't contain the word, and the word starts with the correct letter
-                        if (!duplicateWordsArray[i].Contains(wordToScore.ToLower()) && wordToScore.Substring(0, 1).ToLower() == lobby.GameState.Letter.ToLower())
+                        if (!duplicateWordsList.Contains(wordToScore.ToLower()) && wordToScore.Substring(0, 1).ToLower() == lobby.GameState.Letter.ToLower())
                         {
                             currentWords[i].IsValid = true;
                             player.RoundPoints += 1;
@@ -335,22 +331,19 @@ namespace PlayScattergories.Server.Services
             return null;
         }
 
-        private static List<string>[] PopulateSubmittedWordsArray(Lobby lobby, int arraySize)
+        private static List<string> PopulateSubmittedWordsList(Lobby lobby)
         {
-            var submittedWordsArray = new List<string>[arraySize];
-            for (var i = 0; i < arraySize; i++)
+            var finalList = new List<string>();
+            foreach (var player in lobby.Players)
             {
-                foreach (var player in lobby.Players)
+                var wordList = GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+                foreach (var word in wordList)
                 {
-                    if (submittedWordsArray[i] == null)
-                    {
-                        submittedWordsArray[i] = new List<string>();
-                    }
-                    submittedWordsArray[i].Add(GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber)[i].Value);
+                    finalList.Add(word.Value);
                 }
             }
 
-            return submittedWordsArray;
+            return finalList;
         }
 
         private static ScoreSheet UpdatePlayerScoreSheetByRound(ScoreSheet scoreSheet, List<Word> words, int roundNumber)
