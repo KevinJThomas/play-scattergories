@@ -299,6 +299,19 @@ namespace PlayScattergories.Server.Services
             return null;
         }
 
+        public static Lobby GetLobbyByPlayerId(string playerId)
+        {
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby.IsActive && lobby.Players.Any(p => p.Id == playerId))
+                {
+                    return lobby;
+                }
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region private methods

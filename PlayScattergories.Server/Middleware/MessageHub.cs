@@ -82,4 +82,14 @@ public class MessageHub : Hub
             await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby);
         }
     }
+
+    public async Task SendChat(string message)
+    {
+        var lobby = LobbyService.GetLobbyByPlayerId(Context.ConnectionId);
+
+        if (lobby != null && lobby.IsActive && !string.IsNullOrWhiteSpace(lobby.Id) && lobby.Players != null && lobby.Players.Any())
+        {
+            await Clients.Group(lobby.Id).SendAsync("ChatReceived", message);
+        }
+    }
 }
