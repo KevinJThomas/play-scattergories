@@ -22,6 +22,7 @@ namespace PlayScattergories.Server.Services
                 if (index >= 0 && index < _lobbies.Count)
                 {
                     _lobbies[index].Players.Add(player);
+                    _lobbies[index].HostId = _lobbies[index].Players[0].Id;
                     return _lobbies[index];
                 }
             }
@@ -95,6 +96,10 @@ namespace PlayScattergories.Server.Services
                         // If the lobby hasn't started yet, remove the player from the lobby
                         var index = GetPlayerIndexById(id, lobby);
                         lobby.Players.RemoveAt(index);
+                        if (lobby.Players.Any())
+                        {
+                            lobby.HostId = lobby.Players[0].Id;
+                        }
                         return lobby;
                     }
                     else
@@ -102,7 +107,13 @@ namespace PlayScattergories.Server.Services
                         // If the lobby has started, mark the player as inactive
                         var index = GetPlayerIndexById(id, lobby);
                         lobby.Players[index].IsActive = false;
-                        return null;
+                        var newHost = lobby.Players.Where(x => x.IsActive).FirstOrDefault();
+                        if (newHost != null)
+                        {
+                            lobby.HostId = newHost.Id;
+                        }
+                        
+                        return lobby;
                     }
                 }
             }

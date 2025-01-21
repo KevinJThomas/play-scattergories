@@ -5,7 +5,7 @@ namespace PlayScattergories.Server.Models
     public class Lobby
     {
         public Lobby(string id)
-        { 
+        {
             Id = id;
             GameState = new GameState();
             Players = new List<Player.Player>();
@@ -20,5 +20,6 @@ namespace PlayScattergories.Server.Models
         public bool IsActive { get; set; }
         public bool IsWaitingToStart { get; set; }
         public bool FailedToStart { get; set; }
+        public string HostId { get; set; }
     }
 }

@@ -13,8 +13,8 @@ public class MessageHub : Hub
         if (lobby != null)
         {
             await Groups.AddToGroupAsync(id, lobby.Id);
-            await Clients.Caller.SendAsync("LobbyUpdated", lobby.Players, Context.ConnectionId);
-            await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
+            await Clients.Caller.SendAsync("LobbyUpdated", lobby, Context.ConnectionId);
+            await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby);
         }
     }
 
@@ -79,7 +79,7 @@ public class MessageHub : Hub
 
         if (lobby != null && lobby.IsActive && lobby.IsWaitingToStart && !string.IsNullOrWhiteSpace(lobby.Id) && lobby.Players != null && lobby.Players.Any())
         {
-            await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby.Players);
+            await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby);
         }
     }
 }
