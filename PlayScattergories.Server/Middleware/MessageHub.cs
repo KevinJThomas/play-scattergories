@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using PlayScattergories.Server.Models;
 using PlayScattergories.Server.Models.Player;
 using PlayScattergories.Server.Services;
 
@@ -89,7 +90,16 @@ public class MessageHub : Hub
 
         if (lobby != null && lobby.IsActive && !string.IsNullOrWhiteSpace(lobby.Id) && lobby.Players != null && lobby.Players.Any())
         {
-            await Clients.Group(lobby.Id).SendAsync("ChatReceived", message);
+            var player = lobby.Players.Where(x => x.Id == Context.ConnectionId).FirstOrDefault();
+            if (player != null)
+            {
+                var returnMessage = new Message
+                {
+                    Value = message,
+                    Name = player.Name
+                };
+                await Clients.Group(lobby.Id).SendAsync("ChatReceived", returnMessage);
+            }
         }
     }
 }
