@@ -28,7 +28,7 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
 
   useEffect(() => {
     handleScroll();
-  }, [messages, open]);
+  }, [messages]);
 
   useEffect(() => {
     if (!connection) {

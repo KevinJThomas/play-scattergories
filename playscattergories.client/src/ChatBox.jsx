@@ -21,14 +21,14 @@ export default function ChatBox({ connection, name = "Unknown User" }) {
         <form action="#" className="relative" onSubmit={onSubmit}>
           <div className="rounded-lg bg-white outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
             <label htmlFor="comment" className="sr-only">
-              Add your comment
+              Add your message
             </label>
             <textarea
               autoFocus
               id="comment"
               name="comment"
               rows={3}
-              placeholder="Add your comment..."
+              placeholder="Add your message..."
               className="block w-full resize-none bg-transparent px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
               value={text}
               required
