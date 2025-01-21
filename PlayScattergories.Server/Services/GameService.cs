@@ -237,6 +237,9 @@ namespace PlayScattergories.Server.Services
 
             var numberOfVotesToBan = (lobby.Players.Count + 1) / 2;
 
+            // Reset the list of banned words for this round only
+            lobby.GameState.BannedWords = new List<string>();
+
             // Loop through votes and add words with enough votes to the banned list
             foreach (var vote in lobby.GameState.Votes)
             {
