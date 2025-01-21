@@ -8,6 +8,7 @@ export default function ScorePage({
   playerId,
   gameState,
   connection,
+  hostId,
 }) {
   const nextRoundNumber = gameState.roundNumber + 1;
 
@@ -19,8 +20,6 @@ export default function ScorePage({
     nextRoundNumber > 3
       ? "Final Score"
       : "Round " + gameState.roundNumber + " Score";
-
-  const hostId = players[0].id;
 
   return (
     <div>
@@ -38,7 +37,7 @@ export default function ScorePage({
                     <Avatar name={player.name} />
                     <p className="text-sm/6 text-gray-900">
                       {player.name}
-                      {hostId === player.id && (
+                      {player.id === hostId && (
                         <span className="text-xs text-gray-600"> (Host)</span>
                       )}
                     </p>

@@ -13,6 +13,7 @@ function App() {
   const [error, setError] = useState();
   const [players, setPlayers] = useState([]);
   const [playerId, setPlayerId] = useState("");
+  const [hostId, setHostId] = useState("");
   const [gameState, setGameState] = useState();
 
   useEffect(() => {
@@ -37,12 +38,13 @@ function App() {
       setGameStatus("errorPage");
     });
 
-    connection.on("LobbyUpdated", (players, playerId) => {
+    connection.on("LobbyUpdated", (lobby, playerId) => {
       if (playerId) {
         setGameStatus("lobbyPage");
         setPlayerId(playerId);
       }
-      setPlayers(players);
+      setPlayers(lobby.players);
+      setHostId(lobby.hostId);
     });
 
     connection.on("GameError", (error) => {
@@ -83,10 +85,15 @@ function App() {
           players={players}
           playerId={playerId}
           connection={connection}
+          hostId={hostId}
         />
       )}
       {gameStatus === "gamePage" && (
-        <GamePage gameState={gameState} connection={connection} />
+        <GamePage
+          gameState={gameState}
+          connection={connection}
+          hostId={hostId}
+        />
       )}
       {gameStatus === "scorePage" && (
         <ScorePage
