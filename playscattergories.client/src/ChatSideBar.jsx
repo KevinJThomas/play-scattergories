@@ -11,13 +11,24 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
 
   const handleScroll = () => {
     if (divRef.current) {
+      // console.log(
+      //   divRef.current.scrollTop + divRef.current.offsetHeight >=
+      //     divRef.current.scrollHeight,
+      // );
       divRef.current.scrollTop = divRef.current.scrollHeight;
+
+      // console.log(
+      //   divRef.current.scrollTop + divRef.current.offsetHeight >=
+      //     divRef.current.scrollHeight,
+      // );
+
+      console.log(divRef.current.scrollTop + divRef.current.offsetHeight);
     }
   };
 
   useEffect(() => {
     handleScroll();
-  }, [messages]);
+  }, [messages, open]);
 
   useEffect(() => {
     if (!connection) {
@@ -29,7 +40,12 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
     });
   }, [connection]);
   return (
-    <Dialog open={open} onClose={setOpen} className="relative z-10">
+    <Dialog
+      open={open}
+      onClose={setOpen}
+      className="relative z-10"
+      unmount={false}
+    >
       <div className="fixed inset-0" />
 
       <div className="fixed inset-0 overflow-hidden">
@@ -61,8 +77,8 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
                     ref={divRef}
                     className="h-[calc(100vh-250px)] overflow-y-scroll"
                   >
-                    {messages.map((message, index) => (
-                      <ChatBubble key={index} message={message} />
+                    {messages.map(({ name, value }, index) => (
+                      <ChatBubble key={index} message={value} name={name} />
                     ))}
                   </div>
                   <ChatBox connection={connection} name={name} />
