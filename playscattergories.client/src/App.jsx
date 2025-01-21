@@ -76,7 +76,7 @@ function App() {
   }, [connection]);
 
   return (
-    <div className="flex min-h-screen justify-center overflow-auto bg-gradient-to-r from-green-400 to-blue-500 py-4 sm:py-12">
+    <div className="flex min-h-screen justify-center overflow-auto bg-blue-500 py-4 sm:py-12 md:bg-gradient-to-r md:from-green-400 md:to-blue-500">
       {gameStatus === "namePage" && (
         <NamePage
           setGameStatus={setGameStatus}
