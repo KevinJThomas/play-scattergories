@@ -43,7 +43,7 @@ export default function ScorePage({
                     </p>
                   </div>
                   <p>
-                    <span className="pr-8 text-sm text-green-500">
+                    <span className="pr-2 text-sm text-green-500 sm:pr-8">
                       +{player.roundPoints}
                       <span className="text-xs font-light">pts</span>
                     </span>

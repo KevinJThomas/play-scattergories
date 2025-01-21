@@ -86,7 +86,7 @@ export default function GamePage({ gameState, connection }) {
               <tbody className="divide-y divide-gray-200">
                 {gameState.categoryCard.categories.map((category, index) => (
                   <tr key={category}>
-                    <td className="whitespace-nowrap py-1 pl-2 text-sm font-medium text-gray-900 sm:pl-0 sm:pr-3">
+                    <td className="whitespace-nowrap py-1 pl-2 text-xs font-medium text-gray-900 sm:pl-0 sm:pr-3 sm:text-sm">
                       {index + 1 + "."}
                     </td>
                     <td className="whitespace-nowrap py-1 text-sm text-gray-500 sm:px-3">
@@ -97,7 +97,7 @@ export default function GamePage({ gameState, connection }) {
                         className="block w-full rounded-md bg-white px-3 py-0.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                       />
                     </td>
-                    <td className="whitespace-nowrap py-1 text-sm text-gray-500 sm:px-3">
+                    <td className="whitespace-nowrap py-1 text-xs text-gray-500 sm:px-3 sm:text-sm">
                       {category}
                     </td>
                   </tr>

@@ -71,7 +71,7 @@ export default function VotingPage({ connection, gameState, players }) {
                 <tr>
                   <th
                     scope="col"
-                    className="px-1 py-1 text-left text-sm font-semibold uppercase text-gray-900 sm:px-3"
+                    className="px-1 py-1 text-left text-xs font-semibold uppercase text-gray-900 sm:px-3 sm:text-sm"
                   >
                     LETTER {gameState.letter}
                   </th>
@@ -79,7 +79,7 @@ export default function VotingPage({ connection, gameState, players }) {
                     <th
                       scope="col"
                       key={player.id}
-                      className="px-1 py-1 text-left text-sm font-semibold text-gray-900 sm:px-3"
+                      className="px-1 py-1 text-left text-xs font-semibold text-gray-900 sm:px-3 sm:text-sm"
                     >
                       {player.name}
                     </th>
@@ -90,13 +90,13 @@ export default function VotingPage({ connection, gameState, players }) {
                 {gameState.categoryCard.categories.map(
                   (category, categoryIndex) => (
                     <tr key={category}>
-                      <td className="whitespace-nowrap px-1 py-1 text-sm text-gray-500 sm:px-3">
+                      <td className="whitespace-nowrap px-1 py-1 text-xs text-gray-500 sm:px-3 sm:text-sm">
                         {category}
                       </td>
                       {players.map((player, wordIndex) => (
                         <td
                           key={wordIndex}
-                          className="whitespace-nowrap px-1 py-1 text-sm text-gray-500 sm:px-3"
+                          className="whitespace-nowrap px-1 py-1 text-xs text-gray-500 sm:px-3 sm:text-sm"
                         >
                           {renderCell(
                             player.scoreSheet[gameState.roundNumber - 1][
