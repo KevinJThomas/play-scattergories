@@ -285,7 +285,9 @@ export default function VotingPage({ connection, gameState, players }) {
                           className="whitespace-nowrap px-3 py-2 text-sm text-gray-500"
                         >
                           {renderCell(
-                            player.scoreSheet.roundOne[categoryIndex],
+                            player.scoreSheet[gameState.roundNumber - 1][
+                              categoryIndex
+                            ],
                           )}
                         </td>
                       ))}

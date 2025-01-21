@@ -17,9 +17,14 @@ function App() {
   const [gameState, setGameState] = useState();
 
   useEffect(() => {
+    const url =
+      import.meta.env.MODE === "development"
+        ? "http://localhost:5288/chatHub"
+        : "/chatHub";
+
     const connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Debug) // add this for diagnostic clues
-      .withUrl("http://localhost:5288/chatHub", {
+      .withUrl(url, {
         skipNegotiation: true, // skipNegotiation as we specify WebSockets
         transport: signalR.HttpTransportType.WebSockets, // force WebSocket transport
       })
@@ -71,7 +76,7 @@ function App() {
   }, [connection]);
 
   return (
-    <div className="grid h-screen grid-cols-1 place-items-center items-center overflow-auto bg-gradient-to-r from-green-400 to-blue-500 py-4">
+    <div className="flex min-h-screen justify-center overflow-auto bg-gradient-to-r from-green-400 to-blue-500 py-4 sm:py-12">
       {gameStatus === "namePage" && (
         <NamePage
           setGameStatus={setGameStatus}
