@@ -104,6 +104,7 @@ namespace PlayScattergories.Server.Services
                         {
                             lobby.HostId = lobby.Players[0].Id;
                         }
+
                         return lobby;
                     }
                     else

@@ -82,6 +82,8 @@ public class MessageHub : Hub
         {
             await Clients.Group(lobby.Id).SendAsync("LobbyUpdated", lobby);
         }
+
+        await base.OnDisconnectedAsync(exception);
     }
 
     public async Task SendChat(string message)
