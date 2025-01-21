@@ -26,7 +26,7 @@ export default function ScorePage({
       <Header>{header}</Header>
       <Card>
         <p className="pb-2 text-sm">
-          <span className="font-bold">Vetoed:</span>{" "}
+          <span className="max-w-96 font-bold">Vetoed:</span>{" "}
           {gameState.bannedWords.join(", ")}
         </p>
         <ul role="list" className="divide-y divide-gray-200">
