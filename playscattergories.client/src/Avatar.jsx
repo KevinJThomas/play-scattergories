@@ -1,6 +1,7 @@
 import uniqolor from "uniqolor";
+import clsx from "clsx";
 
-export default function Avatar({ name }) {
+export default function Avatar({ name, className }) {
   function getInitials(name) {
     // Split the name into words based on spaces
     const words = name.split(" ");
@@ -19,7 +20,10 @@ export default function Avatar({ name }) {
   return (
     <span
       style={{ backgroundColor: uniqolor(name).color }}
-      className="mr-3 inline-flex size-8 items-center justify-center rounded-full"
+      className={clsx(
+        "mr-3 inline-flex size-8 shrink-0 items-center justify-center rounded-full",
+        className,
+      )}
     >
       <span className="text-sm font-medium text-white">{initials}</span>
     </span>

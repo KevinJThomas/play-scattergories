@@ -3,8 +3,13 @@ import Header from "../Header";
 import Card from "../Card";
 import Button from "../Button";
 
-export default function NamePage({ connection, setGameStatus, setError }) {
-  const [name, setName] = useState("");
+export default function NamePage({
+  connection,
+  setGameStatus,
+  setError,
+  name,
+  setName,
+}) {
   const [formStatus, setFormStatus] = useState("waiting");
 
   function onSubmit(e) {
@@ -16,8 +21,6 @@ export default function NamePage({ connection, setGameStatus, setError }) {
       setGameStatus("errorPage");
       setError(err);
     });
-
-    setName("");
   }
   return (
     <div>

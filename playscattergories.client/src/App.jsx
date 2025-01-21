@@ -6,6 +6,8 @@ import LobbyPage from "./pages/LobbyPage";
 import GamePage from "./pages/GamePage";
 import ScorePage from "./pages/ScorePage";
 import VotingPage from "./pages/VotingPage";
+import ChatSideBar from "./ChatSideBar";
+import ChatButton from "./ChatButton";
 
 function App() {
   const [gameStatus, setGameStatus] = useState("namePage");
@@ -15,6 +17,8 @@ function App() {
   const [playerId, setPlayerId] = useState("");
   const [hostId, setHostId] = useState("");
   const [gameState, setGameState] = useState();
+  const [chatOpen, setChatOpen] = useState(false);
+  const [name, setName] = useState("");
 
   useEffect(() => {
     const url =
@@ -76,42 +80,57 @@ function App() {
   }, [connection]);
 
   return (
-    <div className="flex min-h-screen justify-center overflow-auto bg-blue-900 py-4 sm:py-12 md:bg-gradient-to-r md:from-green-400 md:to-blue-500">
-      {gameStatus === "namePage" && (
-        <NamePage
-          setGameStatus={setGameStatus}
-          setError={setError}
-          connection={connection}
-        />
-      )}
-      {gameStatus === "errorPage" && <ErrorPage error={error} />}
-      {gameStatus === "lobbyPage" && (
-        <LobbyPage
-          players={players}
-          playerId={playerId}
-          connection={connection}
-          hostId={hostId}
-        />
-      )}
-      {gameStatus === "gamePage" && (
-        <GamePage gameState={gameState} connection={connection} />
-      )}
-      {gameStatus === "scorePage" && (
-        <ScorePage
-          players={players}
-          playerId={playerId}
-          gameState={gameState}
-          connection={connection}
-          hostId={hostId}
-        />
-      )}
-      {gameStatus === "votePage" && (
-        <VotingPage
-          gameState={gameState}
-          connection={connection}
-          players={players}
-        />
-      )}
+    <div className="flex min-h-screen justify-center overflow-auto bg-blue-900 py-4 sm:py-12 md:bg-gradient-to-r md:from-green-700 md:to-blue-800">
+      <div>
+        {gameStatus === "namePage" && (
+          <NamePage
+            setGameStatus={setGameStatus}
+            setError={setError}
+            connection={connection}
+            name={name}
+            setName={setName}
+          />
+        )}
+        {gameStatus === "errorPage" && <ErrorPage error={error} />}
+        {gameStatus === "lobbyPage" && (
+          <LobbyPage
+            players={players}
+            playerId={playerId}
+            connection={connection}
+            hostId={hostId}
+          />
+        )}
+        {gameStatus === "gamePage" && (
+          <GamePage gameState={gameState} connection={connection} />
+        )}
+        {gameStatus === "scorePage" && (
+          <ScorePage
+            players={players}
+            playerId={playerId}
+            gameState={gameState}
+            connection={connection}
+            hostId={hostId}
+          />
+        )}
+        {gameStatus === "votePage" && (
+          <VotingPage
+            gameState={gameState}
+            connection={connection}
+            players={players}
+          />
+        )}
+        {gameStatus !== "namePage" && gameStatus !== "errorPage" && (
+          <>
+            <ChatSideBar
+              name={name}
+              open={chatOpen}
+              setOpen={setChatOpen}
+              connection={connection}
+            />
+            <ChatButton onClick={() => setChatOpen(true)} />
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -25,6 +25,10 @@ export default function ScorePage({
     <div>
       <Header>{header}</Header>
       <Card>
+        <p className="pb-2 text-sm">
+          <span className="font-bold">Vetoed:</span>{" "}
+          {gameState.bannedWords.join(", ")}
+        </p>
         <ul role="list" className="divide-y divide-gray-200">
           {players
             .sort(
@@ -35,7 +39,7 @@ export default function ScorePage({
                 <div className="flex w-full min-w-52 items-center justify-between">
                   <div className="flex items-center">
                     <Avatar name={player.name} />
-                    <p className="text-sm/6 text-gray-900">
+                    <p className="text-sm text-gray-900">
                       {player.name}
                       {player.id === hostId && (
                         <span className="text-xs text-gray-600"> (Host)</span>
