@@ -89,11 +89,7 @@ function App() {
         />
       )}
       {gameStatus === "gamePage" && (
-        <GamePage
-          gameState={gameState}
-          connection={connection}
-          hostId={hostId}
-        />
+        <GamePage gameState={gameState} connection={connection} />
       )}
       {gameStatus === "scorePage" && (
         <ScorePage
@@ -101,6 +97,7 @@ function App() {
           playerId={playerId}
           gameState={gameState}
           connection={connection}
+          hostId={hostId}
         />
       )}
       {gameStatus === "votePage" && (
