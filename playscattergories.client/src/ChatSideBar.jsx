@@ -21,8 +21,6 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
       //   divRef.current.scrollTop + divRef.current.offsetHeight >=
       //     divRef.current.scrollHeight,
       // );
-
-      console.log(divRef.current.scrollTop + divRef.current.offsetHeight);
     }
   };
 
