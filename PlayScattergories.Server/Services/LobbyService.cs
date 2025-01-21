@@ -128,7 +128,13 @@ namespace PlayScattergories.Server.Services
                 if (lobby.Players.Any(p => p.Id == playerId))
                 {
                     var index = GetPlayerIndexById(playerId, lobby);
-                    lobby.Players[index].ScoreSheet = GameService.PopulateScoreSheet(words, lobby.Players[index].ScoreSheet, lobby.GameState.RoundNumber);
+                    var wordList = new List<Word>();
+                    foreach (var word in words)
+                    {
+                        wordList.Add(new Word { Value = word, IsValid = false });
+                    }
+
+                    lobby.Players[index].ScoreSheet[lobby.GameState.RoundNumber - 1] = wordList;
                     lobby.Players[index] = GameService.MarkPlayerAsRoundComplete(lobby.Players[index], lobby.GameState.RoundNumber);
                     return lobby;
                 }

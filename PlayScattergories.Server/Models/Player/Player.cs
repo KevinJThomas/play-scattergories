@@ -9,7 +9,12 @@
             IsActive = true;
             RoundPoints = 0;
             TotalPoints = 0;
-            ScoreSheet = new ScoreSheet();
+            ScoreSheet = new List<List<Word>>
+            {
+                new List<Word>(),
+                new List<Word>(),
+                new List<Word>()
+            };
         }
 
         public string Id { get; set; }
@@ -17,7 +22,7 @@
         public bool IsActive { get; set; }
         public int RoundPoints { get; set; }
         public int TotalPoints { get; set; }
-        public ScoreSheet? ScoreSheet { get; set; }
+        public List<List<Word>>? ScoreSheet { get; set; }
         public bool RoundOneSubmitted { get; set; }
         public bool RoundTwoSubmitted { get; set; }
         public bool RoundThreeSubmitted { get; set; }

@@ -126,7 +126,7 @@ namespace PlayScattergories.Server.Services
             {
                 player.RoundPoints = 0;
                 // Get player words for the round
-                var currentWords = GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+                var currentWords = player.ScoreSheet[lobby.GameState.RoundNumber - 1];//GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
 
                 // Loop through words to score them
                 for (var i = 0; i < currentWords.Count; i++)
@@ -178,7 +178,7 @@ namespace PlayScattergories.Server.Services
                     }
                 }
 
-                player.ScoreSheet = UpdatePlayerScoreSheetByRound(player.ScoreSheet, currentWords, lobby.GameState.RoundNumber);
+                player.ScoreSheet[lobby.GameState.RoundNumber - 1] = currentWords;
             }
 
             var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:VoteLengthInMinutes")).ToUniversalTime() - new DateTime(1970, 1, 1);
@@ -249,7 +249,7 @@ namespace PlayScattergories.Server.Services
             // Loop through players and remove points for each word on the banned list
             foreach (var player in lobby.Players)
             {
-                var words = GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+                var words = player.ScoreSheet[lobby.GameState.RoundNumber - 1];
 
                 if (words != null && words.Any())
                 {
@@ -302,7 +302,7 @@ namespace PlayScattergories.Server.Services
                         }
                     }
 
-                    player.ScoreSheet = UpdatePlayerScoreSheetByRound(player.ScoreSheet, words, lobby.GameState.RoundNumber);
+                    player.ScoreSheet[lobby.GameState.RoundNumber - 1] = words;
                 }
             }
 
@@ -336,7 +336,7 @@ namespace PlayScattergories.Server.Services
             var finalList = new List<string>();
             foreach (var player in lobby.Players)
             {
-                var wordList = GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+                var wordList = player.ScoreSheet[lobby.GameState.RoundNumber - 1];
                 foreach (var word in wordList)
                 {
                     finalList.Add(word.Value);
