@@ -103,6 +103,9 @@ namespace PlayScattergories.Server.Services
                 return null;
             }
 
+            // Reset the list of banned words for this round only
+            lobby.GameState.BannedWords = new List<string>();
+
             var categoryCardLength = ConfigurationHelper.config.GetValue<int>("App:CategoryCardLength");
 
             // Create array of lists with all submitted words
@@ -173,6 +176,11 @@ namespace PlayScattergories.Server.Services
                         }
                         else
                         {
+                            if (!lobby.GameState.BannedWords.Contains(wordToScore.ToLower()))
+                            {
+                                lobby.GameState.BannedWords.Add(wordToScore.ToLower());
+                            }
+                            
                             currentWords[i].IsValid = false;
                         }
                     }
@@ -237,13 +245,10 @@ namespace PlayScattergories.Server.Services
 
             var numberOfVotesToBan = (lobby.Players.Count + 1) / 2;
 
-            // Reset the list of banned words for this round only
-            lobby.GameState.BannedWords = new List<string>();
-
             // Loop through votes and add words with enough votes to the banned list
             foreach (var vote in lobby.GameState.Votes)
             {
-                if (vote.Count >= numberOfVotesToBan)
+                if (vote.Count >= numberOfVotesToBan && !lobby.GameState.BannedWords.Contains(vote.Word.ToLower()))
                 {
                     lobby.GameState.BannedWords.Add(vote.Word.ToLower());
                 }
