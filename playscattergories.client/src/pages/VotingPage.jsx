@@ -71,8 +71,10 @@ export default function VotingPage({ connection, gameState, players }) {
                 <tr>
                   <th
                     scope="col"
-                    className="px-1 py-1 text-left text-5xl font-bold uppercase text-gray-900 sm:px-3"
-                  ></th>
+                    className="px-1 py-1 text-left text-sm font-semibold uppercase text-gray-900 sm:px-3"
+                  >
+                    LETTER {gameState.letter}
+                  </th>
                   {players.map((player) => (
                     <th
                       scope="col"
