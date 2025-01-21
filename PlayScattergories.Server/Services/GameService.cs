@@ -55,7 +55,7 @@ namespace PlayScattergories.Server.Services
             if (usedLetters.Contains(character.ToString()))
             {
                 // If it's a letter that has already been used this game, try again
-                GetLetter(usedLetters);
+                return GetLetter(usedLetters);
             }
 
             return character.ToString();
