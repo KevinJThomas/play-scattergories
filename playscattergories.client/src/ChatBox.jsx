@@ -13,7 +13,7 @@ export default function ChatBox({ connection, name = "Unknown User" }) {
   }
 
   return (
-    <div className="absolute bottom-1 left-6 right-12 flex items-start space-x-3">
+    <div className="absolute bottom-1 left-4 right-4 flex items-start space-x-1 md:left-6 md:right-12 md:space-x-3">
       <div className="shrink-0">
         <Avatar name={name} />
       </div>
@@ -50,7 +50,7 @@ export default function ChatBox({ connection, name = "Unknown User" }) {
                 type="submit"
                 className="inline-flex items-center rounded-md bg-pink-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Post
+                Send
               </button>
             </div>
           </div>

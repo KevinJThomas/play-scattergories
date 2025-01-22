@@ -4,7 +4,13 @@ import ChatBox from "./ChatBox";
 import ChatBubble from "./ChatBubble";
 import { useEffect, useRef, useState } from "react";
 
-export default function ChatSideBar({ open, setOpen, connection, name }) {
+export default function ChatSideBar({
+  open,
+  setOpen,
+  connection,
+  name,
+  setHasUnreadMessage,
+}) {
   const [messages, setMessages] = useState([]);
 
   const divRef = useRef(null);
@@ -35,12 +41,19 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
 
     connection.on("ChatReceived", (message) => {
       setMessages((prev) => [...prev, message]);
+      setHasUnreadMessage(true);
     });
-  }, [connection]);
+
+    return () => connection.off("ChatReceived");
+  }, [connection, setHasUnreadMessage]);
   return (
     <Dialog
       open={open}
-      onClose={setOpen}
+      onClose={() => {
+        console.log("onClose()");
+        setOpen(false);
+        setHasUnreadMessage(false);
+      }}
       className="relative z-10"
       unmount={false}
     >
@@ -60,7 +73,10 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
                     <div className="ml-3 flex h-7 items-center">
                       <button
                         type="button"
-                        onClick={() => setOpen(false)}
+                        onClick={() => {
+                          setHasUnreadMessage(false);
+                          setOpen(false);
+                        }}
                         className="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       >
                         <span className="absolute -inset-2.5" />
@@ -75,8 +91,8 @@ export default function ChatSideBar({ open, setOpen, connection, name }) {
                     ref={divRef}
                     className="h-[calc(100vh-250px)] overflow-y-scroll"
                   >
-                    {messages.map(({ name, value }, index) => (
-                      <ChatBubble key={index} message={value} name={name} />
+                    {messages.map(({ name, value, id }) => (
+                      <ChatBubble key={id} message={value} name={name} />
                     ))}
                   </div>
                   <ChatBox connection={connection} name={name} />
