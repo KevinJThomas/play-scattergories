@@ -12,6 +12,7 @@ namespace PlayScattergories.Server.Models
             IsActive = true;
             IsWaitingToStart = true;
             FailedToStart = false;
+            Messages = new List<Message>();
         }
 
         public string Id { get; set; }
@@ -21,5 +22,6 @@ namespace PlayScattergories.Server.Models
         public bool IsWaitingToStart { get; set; }
         public bool FailedToStart { get; set; }
         public string HostId { get; set; }
+        public List<Message> Messages { get; set; }
     }
 }

@@ -338,6 +338,17 @@ namespace PlayScattergories.Server.Services
             return null;
         }
 
+        public static void AddNewChatMessage(string lobbyId, Message message)
+        {
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby != null && lobby.Id == lobbyId && lobby.Messages != null)
+                {
+                    lobby.Messages.Add(message);
+                }
+            }
+        }
+
         #endregion
 
         #region private methods

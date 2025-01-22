@@ -107,13 +107,15 @@ public class MessageHub : Hub
             var player = lobby.Players.Where(x => x.Id == Context.ConnectionId).FirstOrDefault();
             if (player != null)
             {
-                var returnMessage = new Message
+                var newMessage = new Message
                 {
                     Id =  Guid.NewGuid().ToString(),
                     Value = message,
                     Name = player.Name
                 };
-                await Clients.Group(lobby.Id).SendAsync("ChatReceived", returnMessage);
+
+                LobbyService.AddNewChatMessage(lobby.Id, newMessage);
+                await Clients.Group(lobby.Id).SendAsync("ChatReceived", newMessage);
             }
         }
     }
