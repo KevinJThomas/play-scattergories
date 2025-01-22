@@ -20,6 +20,7 @@ function App() {
   const [chatOpen, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const url =
@@ -55,6 +56,7 @@ function App() {
       }
       setPlayers(lobby.players);
       setHostId(lobby.hostId);
+      setMessages(lobby.messages);
     });
 
     connection.on("GameError", (error) => {
@@ -79,12 +81,18 @@ function App() {
       setPlayers(lobby.players);
     });
 
+    connection.on("ChatReceived", (message) => {
+      setMessages((prev) => [...prev, message]);
+      setHasUnreadMessage(true);
+    });
+
     return () => {
       connection.off("LobbyUpdated");
       connection.off("GameError");
       connection.off("ConfirmNextRound");
       connection.off("RoundComplete");
       connection.off("VoteComplete");
+      connection.off("ChatReceived");
     };
   }, [connection]);
 
@@ -136,6 +144,7 @@ function App() {
               setOpen={setOpen}
               connection={connection}
               setHasUnreadMessage={setHasUnreadMessage}
+              messages={messages}
             />
             <ChatButton
               onClick={() => {
