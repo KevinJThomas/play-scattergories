@@ -25,10 +25,12 @@ export default function ScorePage({
     <div>
       <Header>{header}</Header>
       <Card>
-        <p className="pb-2 text-sm">
-          <span className="max-w-96 font-bold">Vetoed:</span>{" "}
-          {gameState.bannedWords.join(", ")}
-        </p>
+        {gameState.bannedWords.length > 0 && (
+          <p className="pb-2 text-sm">
+            <span className="max-w-96 font-bold">Vetoed:</span>{" "}
+            {gameState.bannedWords.join(", ")}
+          </p>
+        )}
         <ul role="list" className="divide-y divide-gray-200">
           {players
             .sort(
