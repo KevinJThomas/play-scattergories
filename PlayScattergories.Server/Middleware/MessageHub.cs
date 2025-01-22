@@ -97,6 +97,7 @@ public class MessageHub : Hub
             {
                 var returnMessage = new Message
                 {
+                    Id =  Guid.NewGuid().ToString(),
                     Value = message,
                     Name = player.Name
                 };
