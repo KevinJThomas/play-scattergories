@@ -121,6 +121,10 @@ namespace PlayScattergories.Server.Services
                         {
                             lobby.HostId = lobby.Players[0].Id;
                         }
+                        else
+                        {
+                            lobby.IsActive = false;
+                        }
 
                         _logger.LogInformation($"PlayerLeft lobby not started. id: {id}");
                         return lobby;
@@ -134,6 +138,10 @@ namespace PlayScattergories.Server.Services
                         if (newHost != null)
                         {
                             lobby.HostId = newHost.Id;
+                        }
+                        else
+                        {
+                            lobby.IsActive = false;
                         }
 
                         _logger.LogInformation($"PlayerLeft lobby started. id: {id}");
