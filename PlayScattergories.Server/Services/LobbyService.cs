@@ -9,11 +9,13 @@ namespace PlayScattergories.Server.Services
     {
         private static List<Lobby> _lobbies { get; set; } = new List<Lobby>();
         private static readonly int _playerMaxPerLobby = ConfigurationHelper.config.GetValue<int>("App:PlayerMaxPerLobby");
+        private static readonly ILogger _logger = ApplicationLoggingHelper.CreateLogger("LobbyService");
 
         #region public methods
 
         public static Lobby NewPlayerJoined(Player player)
         {
+            _logger.LogInformation("NewPlayerJoined", [player]);
             ClearInactiveLobbies();
             var availableLobby = FindAvailableLobby();
             if (availableLobby != null)
