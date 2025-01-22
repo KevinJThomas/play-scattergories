@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Avatar from "../Avatar";
 import Button from "../Button";
 import Card from "../Card";
@@ -11,9 +12,11 @@ export default function ScorePage({
   hostId,
 }) {
   const nextRoundNumber = gameState.roundNumber + 1;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function nextRound() {
     connection.invoke("NextRound");
+    setIsSubmitting(true);
   }
 
   const header =
@@ -63,7 +66,12 @@ export default function ScorePage({
             ))}
         </ul>
         {playerId === hostId && nextRoundNumber <= 3 && (
-          <Button fullWidth disabled={players.length <= 1} onClick={nextRound}>
+          <Button
+            fullWidth
+            disabled={players.length <= 1}
+            onClick={nextRound}
+            loading={isSubmitting}
+          >
             Start Round #{nextRoundNumber}
           </Button>
         )}

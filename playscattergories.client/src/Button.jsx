@@ -19,7 +19,7 @@ export default function Button({
     <button
       type="submit"
       className={buttonClasses}
-      disabled={disabled}
+      disabled={disabled || loading}
       {...props}
     >
       <div className="inline-flex items-center justify-center">
