@@ -37,7 +37,6 @@ export default function ChatSideBar({
     <Dialog
       open={open}
       onClose={() => {
-        console.log("onClose()");
         setOpen(false);
         setHasUnreadMessage(false);
       }}
