@@ -2,6 +2,7 @@
 using PlayScattergories.Server.Models;
 using PlayScattergories.Server.Models.Game;
 using PlayScattergories.Server.Models.Player;
+using System.Numerics;
 
 namespace PlayScattergories.Server.Services
 {
@@ -23,7 +24,7 @@ namespace PlayScattergories.Server.Services
 
         public static Lobby NewPlayerJoined(Player player)
         {
-            _logger.LogInformation("NewPlayerJoined", [player]);
+            _logger.LogInformation($"NewPlayerJoined. player.Id: {player.Id} player.Name: {player.Name}");
             ClearInactiveLobbies();
             var availableLobby = FindAvailableLobby();
             if (availableLobby != null)
@@ -42,6 +43,7 @@ namespace PlayScattergories.Server.Services
 
         public static Lobby? NextRound(string playerId)
         {
+            _logger.LogInformation($"NextRound start. playerId: {playerId}");
             var lobbyIndex = -1;
             var lobbyId = string.Empty;
 
@@ -62,6 +64,7 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex].Players.Count <= 0 ||
                 _lobbies[lobbyIndex].Players[0].Id != playerId)
             {
+                _logger.LogError($"NextRound null. playerId: {playerId}");
                 return null;
             }
 
@@ -90,10 +93,12 @@ namespace PlayScattergories.Server.Services
                     _lobbies[lobbyIndex].GameState.RoundNumber += 1;
                 }
 
+                _logger.LogInformation($"NextRound end. playerId: {playerId}");
                 return _lobbies[lobbyIndex];
             }
             else
             {
+                _logger.LogWarning($"NextRound failed. playerId: {playerId}");
                 _lobbies[lobbyIndex].FailedToStart = true;
                 return _lobbies[lobbyIndex];
             }
@@ -115,6 +120,7 @@ namespace PlayScattergories.Server.Services
                             lobby.HostId = lobby.Players[0].Id;
                         }
 
+                        _logger.LogInformation($"PlayerLeft lobby not started. id: {id}");
                         return lobby;
                     }
                     else
@@ -127,7 +133,8 @@ namespace PlayScattergories.Server.Services
                         {
                             lobby.HostId = newHost.Id;
                         }
-                        
+
+                        _logger.LogInformation($"PlayerLeft lobby started. id: {id}");
                         return lobby;
                     }
                 }
@@ -162,6 +169,7 @@ namespace PlayScattergories.Server.Services
         {
             if (lobby != null && lobby.GameState != null)
             {
+                _logger.LogInformation($"IsRoundComplete. lobby.Id: {lobby.Id}");
                 switch (lobby.GameState.RoundNumber)
                 {
                     case 1:
@@ -214,6 +222,7 @@ namespace PlayScattergories.Server.Services
 
         public static Lobby ScoreRound(string lobbyId)
         {
+            _logger.LogInformation($"ScoreRound start. lobbyId: {lobbyId}");
             if (string.IsNullOrWhiteSpace(lobbyId))
             {
                 return null;
@@ -228,6 +237,7 @@ namespace PlayScattergories.Server.Services
             {
                 _lobbies[index] = GameService.ScoreRound(_lobbies[index]);
 
+                _logger.LogInformation($"ScoreRound end. lobbyId: {lobbyId}");
                 return _lobbies[index];
             }
 
@@ -274,6 +284,7 @@ namespace PlayScattergories.Server.Services
         {
             if (lobby != null && lobby.GameState != null)
             {
+                _logger.LogInformation($"IsVotingComplete. lobby.Id: {lobby.Id}");
                 switch (lobby.GameState.RoundNumber)
                 {
                     case 1:
@@ -290,6 +301,7 @@ namespace PlayScattergories.Server.Services
 
         public static Lobby ScoreVotes(string lobbyId)
         {
+            _logger.LogInformation($"ScoreVotes start. lobbyId: {lobbyId}");
             if (string.IsNullOrWhiteSpace(lobbyId))
             {
                 return null;
@@ -304,6 +316,7 @@ namespace PlayScattergories.Server.Services
             {
                 _lobbies[index] = GameService.ScoreVotes(_lobbies[index]);
 
+                _logger.LogInformation($"ScoreVotes start. lobbyId: {lobbyId}");
                 return _lobbies[index];
             }
 
@@ -344,6 +357,10 @@ namespace PlayScattergories.Server.Services
                 if (lobby.IsActive)
                 {
                     newLobbiesList.Add(lobby);
+                }
+                else
+                {
+                    _logger.LogInformation($"ClearInactiveLobbies Id: {lobby.Id}");
                 }
             }
 
