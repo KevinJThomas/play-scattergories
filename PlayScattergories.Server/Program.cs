@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging.AzureAppServices;
 using PlayScattergories.Server.Helpers;
+using PlayScattergories.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,5 +53,9 @@ app.UseCors(options =>
 });
 
 ConfigurationHelper.Initialize(app.Configuration);
+var logFactory = new LoggerFactory();
+var logger = logFactory.CreateLogger<Program>();
+logger.LogInformation("this is debug log");
+LobbyService.Initialize(logger);
 
 app.Run();
