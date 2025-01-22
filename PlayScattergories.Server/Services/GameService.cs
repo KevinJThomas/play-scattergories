@@ -328,6 +328,7 @@ namespace PlayScattergories.Server.Services
                 }
             }
 
+            lobby.GameState.BannedWords = lobby.GameState.BannedWords.OrderBy(x => x).ToList();
             return lobby;
         }
 
