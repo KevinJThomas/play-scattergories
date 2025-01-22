@@ -50,7 +50,7 @@ namespace PlayScattergories.Server.Services
 
             foreach (var lobby in _lobbies)
             {
-                if (lobby != null && lobby.Players != null && lobby.Players.Any() && lobby.Players[0].Id == playerId)
+                if (lobby != null && lobby.Players != null && lobby.Players.Any() && lobby.HostId == playerId)
                 {
                     lobbyId = lobby.Id;
                     lobbyIndex = GetLobbyIndexById(lobbyId);
