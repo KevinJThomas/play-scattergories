@@ -17,7 +17,7 @@ function App() {
   const [playerId, setPlayerId] = useState("");
   const [hostId, setHostId] = useState("");
   const [gameState, setGameState] = useState();
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
 
@@ -133,14 +133,14 @@ function App() {
             <ChatSideBar
               name={name}
               open={chatOpen}
-              setOpen={setChatOpen}
+              setOpen={setOpen}
               connection={connection}
               setHasUnreadMessage={setHasUnreadMessage}
             />
             <ChatButton
               onClick={() => {
                 setHasUnreadMessage(false);
-                setChatOpen(true);
+                setOpen(true);
               }}
               hasUnreadMessage={hasUnreadMessage}
             />

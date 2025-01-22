@@ -1,5 +1,4 @@
 import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
 
 export default function ChatButton({ onClick, hasUnreadMessage }) {
   return (
