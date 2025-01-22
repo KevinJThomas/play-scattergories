@@ -63,7 +63,7 @@ namespace PlayScattergories.Server.Services
                 _lobbies[lobbyIndex] == null ||
                 _lobbies[lobbyIndex].Players == null ||
                 _lobbies[lobbyIndex].Players.Count <= 0 ||
-                _lobbies[lobbyIndex].Players[0].Id != playerId)
+                _lobbies[lobbyIndex].HostId != playerId)
             {
                 _logger.LogError($"NextRound null. playerId: {playerId}");
                 return null;
