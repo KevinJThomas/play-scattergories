@@ -30,7 +30,7 @@ export default function VotingPage({ connection, gameState, players }) {
     }
   }
 
-  function renderCell({ isValid, value }) {
+  function renderCell({ isValid, value } = { isValid: true, value: "" }) {
     const isBanned = bannedWords.includes(value);
 
     return (
