@@ -5,8 +5,20 @@ using PlayScattergories.Server.Services;
 
 public class MessageHub : Hub
 {
+    private readonly ILogger _logger;
+
+    public MessageHub(ILogger<MessageHub> logger)
+    {
+        _logger = logger;
+    }
+
     public async Task PlayerJoined(string name)
     {
+        if (!LobbyService.Initialized)
+        {
+            LobbyService.Initialize(_logger);
+        }
+
         var id = Context.ConnectionId;
         var player = new Player(id, name);
         var lobby = LobbyService.NewPlayerJoined(player);

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging.AzureAppServices;
 using PlayScattergories.Server.Helpers;
-using PlayScattergories.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +38,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<MessageHub>("/chatHub");
-//app.MapGet("/test", async (IHubContext<ChatHub> hub, string message) =>
-//  await hub.Clients.All.SendAsync("NotifyMe", $"Message: {message}"));
 
 app.MapFallbackToFile("/index.html");
 
@@ -53,9 +50,5 @@ app.UseCors(options =>
 });
 
 ConfigurationHelper.Initialize(app.Configuration);
-var logFactory = new LoggerFactory();
-var logger = logFactory.CreateLogger<Program>();
-logger.LogInformation("this is debug log");
-LobbyService.Initialize(logger);
 
 app.Run();

@@ -7,6 +7,8 @@ namespace PlayScattergories.Server.Services
 {
     public static class LobbyService
     {
+        public static bool Initialized { get; private set; }
+
         private static List<Lobby> _lobbies { get; set; } = new List<Lobby>();
         private static readonly int _playerMaxPerLobby = ConfigurationHelper.config.GetValue<int>("App:PlayerMaxPerLobby");
         private static ILogger _logger;
@@ -16,6 +18,7 @@ namespace PlayScattergories.Server.Services
         public static void Initialize(ILogger logger)
         {
             _logger = logger;
+            Initialized = true;
         }
 
         public static Lobby NewPlayerJoined(Player player)
