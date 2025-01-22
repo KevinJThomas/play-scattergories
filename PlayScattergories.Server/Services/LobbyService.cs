@@ -124,6 +124,7 @@ namespace PlayScattergories.Server.Services
                         else
                         {
                             lobby.IsActive = false;
+                            ClearInactiveLobbies();
                         }
 
                         _logger.LogInformation($"PlayerLeft lobby not started. id: {id}");
@@ -142,6 +143,7 @@ namespace PlayScattergories.Server.Services
                         else
                         {
                             lobby.IsActive = false;
+                            ClearInactiveLobbies();
                         }
 
                         _logger.LogInformation($"PlayerLeft lobby started. id: {id}");
