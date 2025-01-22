@@ -9,8 +9,14 @@ namespace PlayScattergories.Server.Services
     {
         private static Random _random = new Random();
         private static readonly List<string> _articles = ConfigurationHelper.config.GetSection("Articles").GetChildren().Select(x => x.Value).ToList();
+        private static ILogger _logger;
 
         #region public methods
+
+        public static void Initialize(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public static List<CategoryCard> GetAllCategoryCards()
         {
@@ -103,95 +109,103 @@ namespace PlayScattergories.Server.Services
                 return null;
             }
 
-            // Reset the list of banned words for this round only
-            lobby.GameState.BannedWords = new List<string>();
-
-            var categoryCardLength = ConfigurationHelper.config.GetValue<int>("App:CategoryCardLength");
-
-            // Create array of lists with all submitted words
-            var submittedWordsList = PopulateSubmittedWordsList(lobby);
-
-            // Create array of lists for all duplicate words
-            var duplicateWordsList = new List<string>();
-
-            // Loop through array and populate duplicates lists
-            for (var i = 0; i < submittedWordsList.Count; i++)
+            try
             {
-                var duplicates = submittedWordsList.GroupBy(x => x).Where(g => g.Count() > 1).Select(y => y.Key.ToLower()).ToList();
-                if (duplicates != null)
-                {
-                    duplicateWordsList = duplicates;
-                }
-            }
+                // Reset the list of banned words for this round only
+                lobby.GameState.BannedWords = new List<string>();
 
-            // Loop through players and give out points for scoring words
-            foreach (var player in lobby.Players)
-            {
-                player.RoundPoints = 0;
-                // Get player words for the round
-                var currentWords = player.ScoreSheet[lobby.GameState.RoundNumber - 1];//GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+                var categoryCardLength = ConfigurationHelper.config.GetValue<int>("App:CategoryCardLength");
 
-                // Loop through words to score them
-                for (var i = 0; i < currentWords.Count; i++)
+                // Create array of lists with all submitted words
+                var submittedWordsList = PopulateSubmittedWordsList(lobby);
+
+                // Create array of lists for all duplicate words
+                var duplicateWordsList = new List<string>();
+
+                // Loop through array and populate duplicates lists
+                for (var i = 0; i < submittedWordsList.Count; i++)
                 {
-                    // If the word isn't null
-                    if (!string.IsNullOrWhiteSpace(currentWords[i].Value))
+                    var duplicates = submittedWordsList.GroupBy(x => x).Where(g => g.Count() > 1).Select(y => y.Key.ToLower()).ToList();
+                    if (duplicates != null)
                     {
-                        var wordSplit = currentWords[i].Value.Split(' ');
-                        var wordToScore = string.Empty;
+                        duplicateWordsList = duplicates;
+                    }
+                }
 
-                        // Remove starting article if present
-                        if (wordSplit.Length > 1 && _articles.Contains(wordSplit[0]))
+                // Loop through players and give out points for scoring words
+                foreach (var player in lobby.Players)
+                {
+                    player.RoundPoints = 0;
+                    // Get player words for the round
+                    var currentWords = player.ScoreSheet[lobby.GameState.RoundNumber - 1];//GetPlayerScoreSheetByRound(player.ScoreSheet, lobby.GameState.RoundNumber);
+
+                    // Loop through words to score them
+                    for (var i = 0; i < currentWords.Count; i++)
+                    {
+                        // If the word isn't null
+                        if (!string.IsNullOrWhiteSpace(currentWords[i].Value))
                         {
-                            var listWithoutArticle = new List<string>(wordSplit);
-                            listWithoutArticle.RemoveAt(0);
-                            wordSplit = listWithoutArticle.ToArray();
-                        }
+                            var wordSplit = currentWords[i].Value.Split(' ');
+                            var wordToScore = string.Empty;
 
-                        wordToScore = string.Join(" ", wordSplit);
-
-                        // If the duplicates array doesn't contain the word, and the word starts with the correct letter
-                        if (!duplicateWordsList.Contains(wordToScore.ToLower()) && wordToScore.Substring(0, 1).ToLower() == lobby.GameState.Letter.ToLower())
-                        {
-                            currentWords[i].IsValid = true;
-                            player.RoundPoints += 1;
-                            player.TotalPoints += 1;
-
-                            if (ConfigurationHelper.config.GetValue<bool>("App:ExtraPointsEnabled"))
+                            // Remove starting article if present
+                            if (wordSplit.Length > 1 && _articles.Contains(wordSplit[0]))
                             {
-                                // Check for multi word answers
-                                if (wordSplit != null && wordSplit.Length > 1)
+                                var listWithoutArticle = new List<string>(wordSplit);
+                                listWithoutArticle.RemoveAt(0);
+                                wordSplit = listWithoutArticle.ToArray();
+                            }
+
+                            wordToScore = string.Join(" ", wordSplit);
+
+                            // If the duplicates array doesn't contain the word, and the word starts with the correct letter
+                            if (!duplicateWordsList.Contains(wordToScore.ToLower()) && wordToScore.Substring(0, 1).ToLower() == lobby.GameState.Letter.ToLower())
+                            {
+                                currentWords[i].IsValid = true;
+                                player.RoundPoints += 1;
+                                player.TotalPoints += 1;
+
+                                if (ConfigurationHelper.config.GetValue<bool>("App:ExtraPointsEnabled"))
                                 {
-                                    // Start at index 1 here, because we've already given out one point for the starting letter
-                                    for (var j = 1; j < wordSplit.Length; j++)
+                                    // Check for multi word answers
+                                    if (wordSplit != null && wordSplit.Length > 1)
                                     {
-                                        if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter && !_articles.Contains(wordSplit[j]))
+                                        // Start at index 1 here, because we've already given out one point for the starting letter
+                                        for (var j = 1; j < wordSplit.Length; j++)
                                         {
-                                            player.RoundPoints += 1;
-                                            player.TotalPoints += 1;
+                                            if (wordSplit[j].Substring(0, 1) == lobby.GameState.Letter && !_articles.Contains(wordSplit[j]))
+                                            {
+                                                player.RoundPoints += 1;
+                                                player.TotalPoints += 1;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        else
-                        {
-                            if (!lobby.GameState.BannedWords.Contains(wordToScore.ToLower()))
+                            else
                             {
-                                lobby.GameState.BannedWords.Add(wordToScore.ToLower());
+                                if (!lobby.GameState.BannedWords.Contains(wordToScore.ToLower()))
+                                {
+                                    lobby.GameState.BannedWords.Add(wordToScore.ToLower());
+                                }
+
+                                currentWords[i].IsValid = false;
                             }
-                            
-                            currentWords[i].IsValid = false;
                         }
                     }
+
+                    player.ScoreSheet[lobby.GameState.RoundNumber - 1] = currentWords;
                 }
 
-                player.ScoreSheet[lobby.GameState.RoundNumber - 1] = currentWords;
+                var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:VoteLengthInMinutes")).ToUniversalTime() - new DateTime(1970, 1, 1);
+                lobby.GameState.SubmitNextVoteTimeLimit = (long)(time.TotalMilliseconds + 0.5);
+                return lobby;
             }
-
-            var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:VoteLengthInMinutes")).ToUniversalTime() - new DateTime(1970, 1, 1);
-            lobby.GameState.SubmitNextVoteTimeLimit = (long)(time.TotalMilliseconds + 0.5);
-            return lobby;
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception in ScoreRound: {e.Message}");
+                return lobby;
+            }
         }
 
         public static Player MarkPlayerAsRoundComplete(Player player, int roundNumber)

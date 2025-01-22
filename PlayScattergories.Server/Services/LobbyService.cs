@@ -19,6 +19,7 @@ namespace PlayScattergories.Server.Services
         public static void Initialize(ILogger logger)
         {
             _logger = logger;
+            GameService.Initialize(logger);
             Initialized = true;
         }
 
@@ -81,7 +82,8 @@ namespace PlayScattergories.Server.Services
                 }
 
                 _lobbies[lobbyIndex].GameState.Letter = GameService.GetLetter(_lobbies[lobbyIndex].GameState.UsedLetters);
-                var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:GameLengthInMinutes")).ToUniversalTime() - new DateTime(1970, 1, 1);
+                //var time = DateTime.Now.AddMinutes(ConfigurationHelper.config.GetValue<int>("App:GameLengthInMinutes")).ToUniversalTime() - new DateTime(1970, 1, 1);
+                var time = DateTime.Now.AddSeconds(ConfigurationHelper.config.GetValue<int>("App:GameLengthInSeconds")).ToUniversalTime() - new DateTime(1970, 1, 1);
                 _lobbies[lobbyIndex].GameState.SubmitNextRoundTimeLimit = (long)(time.TotalMilliseconds + 0.5);
                 if (_lobbies[lobbyIndex].IsWaitingToStart)
                 {
@@ -316,7 +318,7 @@ namespace PlayScattergories.Server.Services
             {
                 _lobbies[index] = GameService.ScoreVotes(_lobbies[index]);
 
-                _logger.LogInformation($"ScoreVotes start. lobbyId: {lobbyId}");
+                _logger.LogInformation($"ScoreVotes end. lobbyId: {lobbyId}");
                 return _lobbies[index];
             }
 
