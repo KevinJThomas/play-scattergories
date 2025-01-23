@@ -1,8 +1,6 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import ChatBox from "./ChatBox";
-import ChatBubble from "./ChatBubble";
-import { useEffect, useRef } from "react";
+import ChatContent from "./ChatContent";
 
 export default function ChatSideBar({
   open,
@@ -12,27 +10,6 @@ export default function ChatSideBar({
   setHasUnreadMessage,
   messages,
 }) {
-  const divRef = useRef(null);
-
-  const handleScroll = () => {
-    if (divRef.current) {
-      // console.log(
-      //   divRef.current.scrollTop + divRef.current.offsetHeight >=
-      //     divRef.current.scrollHeight,
-      // );
-      divRef.current.scrollTop = divRef.current.scrollHeight;
-
-      // console.log(
-      //   divRef.current.scrollTop + divRef.current.offsetHeight >=
-      //     divRef.current.scrollHeight,
-      // );
-    }
-  };
-
-  useEffect(() => {
-    handleScroll();
-  }, [messages]);
-
   return (
     <Dialog
       open={open}
@@ -72,17 +49,11 @@ export default function ChatSideBar({
                     </div>
                   </div>
                 </div>
-                <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                  <div
-                    ref={divRef}
-                    className="h-[calc(100vh-250px)] overflow-y-scroll"
-                  >
-                    {messages.map(({ name, value, id }) => (
-                      <ChatBubble key={id} message={value} name={name} />
-                    ))}
-                  </div>
-                  <ChatBox connection={connection} name={name} />
-                </div>
+                <ChatContent
+                  connection={connection}
+                  messages={messages}
+                  name={name}
+                />
               </div>
             </DialogPanel>
           </div>
