@@ -339,7 +339,7 @@ namespace PlayScattergories.Server.Services
         {
             foreach (var lobby in _lobbies)
             {
-                if (lobby.IsActive && lobby.Players.Any(p => p.Id == playerId))
+                if (lobby != null && lobby.IsActive && lobby.Players != null && lobby.Players.Any(p => p.Id == playerId))
                 {
                     return lobby;
                 }
@@ -357,6 +357,32 @@ namespace PlayScattergories.Server.Services
                     lobby.Messages.Add(message);
                 }
             }
+        }
+
+        public static Lobby GetLobbyByLobbyId(string lobbyId)
+        {
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby != null && lobby.Id == lobbyId)
+                {
+                    return lobby;
+                }
+            }
+
+            return null;
+        }
+
+        public static Player GetPlayerByPlayerId(string playerId)
+        {
+            foreach (var lobby in _lobbies)
+            {
+                if (lobby != null && lobby.Players != null && lobby.Players.Any(p => p.Id == playerId))
+                {
+                    return lobby.Players.Where(x => x.Id == playerId).FirstOrDefault();
+                }
+            }
+
+            return null;
         }
 
         #endregion
