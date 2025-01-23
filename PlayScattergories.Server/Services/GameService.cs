@@ -331,6 +331,8 @@ namespace PlayScattergories.Server.Services
                 }
             }
 
+            // Reset votes list for next round
+            lobby.GameState.Votes = new List<Vote>();
             lobby.GameState.BannedWords = lobby.GameState.BannedWords.OrderBy(x => x).ToList();
             return lobby;
         }
