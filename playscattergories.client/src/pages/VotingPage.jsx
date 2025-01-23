@@ -113,8 +113,13 @@ export default function VotingPage({ connection, gameState, players }) {
           </div>
         </div>
       </Card>
-      <Button fullWidth onClick={submitVote} disabled={hasVoted}>
-        Submit
+      <Button
+        fullWidth
+        onClick={submitVote}
+        disabled={hasVoted}
+        disabledText={hasVoted && "Waiting for others to submit"}
+      >
+        {hasVoted ? "Waiting for others to submit" : "Submit"}
       </Button>
     </div>
   );
